@@ -28,57 +28,57 @@ export function readToken(): string | undefined {
   return (JSON.parse(auth) as Auth).token;
 }
 
-export type UnsavedTodo = {
-  task: string;
-  isCompleted: boolean;
-};
-export type Todo = UnsavedTodo & {
-  todoId: number;
-};
+// export type UnsavedTodo = {
+//   task: string;
+//   isCompleted: boolean;
+// };
+// export type Todo = UnsavedTodo & {
+//   todoId: number;
+// };
 
-export async function readTodos(): Promise<Todo[]> {
-  const res = await fetch('/api/todos', {
-    headers: { Authorization: ('Bearer ' + readToken()) as string },
-  });
-  if (!res.ok) throw new Error(`fetch Error ${res.status}`);
-  return (await res.json()) as Todo[];
-}
+// export async function readTodos(): Promise<Todo[]> {
+//   const res = await fetch('/api/todos', {
+//     headers: { Authorization: ('Bearer ' + readToken()) as string },
+//   });
+//   if (!res.ok) throw new Error(`fetch Error ${res.status}`);
+//   return (await res.json()) as Todo[];
+// }
 
-export async function insertTodo(todo: UnsavedTodo): Promise<Todo> {
-  const req = {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: ('Bearer ' + readToken()) as string,
-    },
-    body: JSON.stringify(todo),
-  };
-  const res = await fetch('/api/todos', req);
-  if (!res.ok) throw new Error(`fetch Error ${res.status}`);
-  return (await res.json()) as Todo;
-}
+// export async function insertTodo(todo: UnsavedTodo): Promise<Todo> {
+//   const req = {
+//     method: 'POST',
+//     headers: {
+//       'Content-Type': 'application/json',
+//       Authorization: ('Bearer ' + readToken()) as string,
+//     },
+//     body: JSON.stringify(todo),
+//   };
+//   const res = await fetch('/api/todos', req);
+//   if (!res.ok) throw new Error(`fetch Error ${res.status}`);
+//   return (await res.json()) as Todo;
+// }
 
-export async function updateTodo(todo: Todo): Promise<Todo> {
-  const req = {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: ('Bearer ' + readToken()) as string,
-    },
-    body: JSON.stringify(todo),
-  };
-  const res = await fetch(`/api/todos/${todo.todoId}`, req);
-  if (!res.ok) throw new Error(`fetch Error ${res.status}`);
-  return (await res.json()) as Todo;
-}
+// export async function updateTodo(todo: Todo): Promise<Todo> {
+//   const req = {
+//     method: 'PUT',
+//     headers: {
+//       'Content-Type': 'application/json',
+//       Authorization: ('Bearer ' + readToken()) as string,
+//     },
+//     body: JSON.stringify(todo),
+//   };
+//   const res = await fetch(`/api/todos/${todo.todoId}`, req);
+//   if (!res.ok) throw new Error(`fetch Error ${res.status}`);
+//   return (await res.json()) as Todo;
+// }
 
-export async function removeTodo(todoId: number): Promise<void> {
-  const req = {
-    method: 'DELETE',
-    headers: {
-      Authorization: ('Bearer ' + readToken()) as string,
-    },
-  };
-  const res = await fetch(`/api/todos/${todoId}`, req);
-  if (!res.ok) throw new Error(`fetch Error ${res.status}`);
-}
+// export async function removeTodo(todoId: number): Promise<void> {
+//   const req = {
+//     method: 'DELETE',
+//     headers: {
+//       Authorization: ('Bearer ' + readToken()) as string,
+//     },
+//   };
+//   const res = await fetch(`/api/todos/${todoId}`, req);
+//   if (!res.ok) throw new Error(`fetch Error ${res.status}`);
+// }
