@@ -1,68 +1,47 @@
-import { useEffect, useState } from 'react';
 import { TiThMenu } from 'react-icons/ti';
 import { Outlet } from 'react-router-dom';
+import { useUser } from './useUser';
+import { Popup } from './Popup';
+import { useRef, useState } from 'react';
 
 export function Header() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<unknown>();
+  const { user, handleSignOut } = useUser();
+  const [menuIsOpen, setMenuIsOpen] = useState(false);
+  const menuBtnRef = useRef<HTMLButtonElement>(null);
 
-  useEffect(() => {
-    // this function will check the db for the 'demo' user
-    // if it doesn't exist, it will create the demo account
-    // this is to ensure that a demo account is always accessible
-    async function verifyDemo(): Promise<void> {
-      try {
-        const res = await fetch('/api/users/demo');
-        if (!res.ok) throw new Error(`fetch Error ${res.status}`);
-        const demoExistsObj = await res.json();
-
-        if (demoExistsObj.demoExists) {
-          return;
-        }
-
-        const req = {
-          headers: {
-            'content-type': 'application/json',
-          },
-          method: 'post',
-          body: JSON.stringify({
-            username: 'demo',
-            password: 'demoPassword987',
-          }),
-        };
-        const response = await fetch('/api/auth/sign-up', req);
-        if (!response.ok) throw new Error(`fetch Error ${response.status}`);
-      } catch (err) {
-        console.error(err);
-        setError(err);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    verifyDemo();
-  }, []);
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return (
-      <p>Error: {error instanceof Error ? error.message : 'Unknown Error'}</p>
-    );
+  function handleLogoutClick() {
+    handleSignOut();
+    setMenuIsOpen(false);
   }
 
   return (
-    <div>
-      <div className="p-2 px-[15px] flex justify-between">
-        <h1 className="text-[32px] font-bold">NewU</h1>
-        <button className="text-[32px]">
-          <TiThMenu />
-        </button>
+    <>
+      <div>
+        <div className="p-2 px-[15px] flex justify-between">
+          <h1 className="text-[32px] font-bold">NewU</h1>
+          {user && (
+            <div className="flex items-center">
+              <span className="h-fit mr-[20px]">{user?.displayName}</span>
+              <button
+                ref={menuBtnRef}
+                className="text-[32px]"
+                onClick={() => setMenuIsOpen(true)}>
+                <TiThMenu />
+              </button>
+            </div>
+          )}
+        </div>
+        <hr className="border-[1px]" />
+        <Outlet />
       </div>
-      <hr className="border-[1px]" />
-      <Outlet />
-    </div>
+      <Popup
+        isOpen={menuIsOpen}
+        buttonRef={menuBtnRef}
+        onShadeClick={() => setMenuIsOpen(!menuIsOpen)}>
+        <ul>
+          <li>{user && <a onClick={handleLogoutClick}>Log Out</a>}</li>
+        </ul>
+      </Popup>
+    </>
   );
 }

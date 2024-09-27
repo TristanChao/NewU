@@ -1,8 +1,17 @@
 import { Link } from 'react-router-dom';
 import { useUser } from '../components/useUser';
+import { useEffect } from 'react';
 
 export function Home() {
   const { user, handleSignIn } = useUser();
+
+  useEffect(() => {
+    const localAuthJson = localStorage.getItem('um.auth');
+    if (localAuthJson) {
+      const localAuth = JSON.parse(localAuthJson);
+      handleSignIn(localAuth.user, localAuth.token);
+    }
+  }, [handleSignIn]);
 
   async function onDemoClick() {
     const req = {

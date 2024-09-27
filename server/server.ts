@@ -39,18 +39,21 @@ app.get('/api/hello', (req, res) => {
 // creates a new user when the sign-up form is submitted
 app.post('/api/auth/sign-up', async (req, res, next) => {
   try {
-    const { username, password } = req.body;
-    if (!username || !password) {
-      throw new ClientError(400, 'username and password are required fields');
+    const { username, password, displayName } = req.body;
+    if (!username || !password || !displayName) {
+      throw new ClientError(
+        400,
+        'username, password, and displayName are required fields'
+      );
     }
 
     const hashedPassword = await argon2.hash(password);
     const sql = `
       insert into "users" ("username", "hashedPassword", "displayName")
-      values ($1, $2, $1)
+      values ($1, $2, $3)
       returning "userId", "username", "displayName", "createdAt";
     `;
-    const result = await db.query(sql, [username, hashedPassword]);
+    const result = await db.query(sql, [username, hashedPassword, displayName]);
     const newUser = result.rows[0];
     if (!newUser) throw new ClientError(404, 'error creating user');
     res.json(newUser);
@@ -69,16 +72,17 @@ app.post('/api/auth/sign-in', async (req, res, next) => {
     }
     const sql = `
       select "userId",
-             "hashedPassword"
+             "hashedPassword",
+             "displayName"
       from "users"
       where "username" = $1;
     `;
     const result = await db.query(sql, [username]);
     if (!result.rows[0])
       throw new ClientError(404, `user ${username} not found`);
-    const { userId, hashedPassword } = result.rows[0];
+    const { userId, hashedPassword, displayName } = result.rows[0];
     if (await argon2.verify(hashedPassword, password)) {
-      const payload = { userId, username };
+      const payload = { userId, username, displayName };
       const token = jwt.sign(payload, hashKey);
       res.json({ user: payload, token });
     } else {

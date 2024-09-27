@@ -4,6 +4,7 @@ import { removeAuth, saveAuth } from '../lib';
 export type User = {
   userId: number;
   username: string;
+  displayName: string;
 };
 
 export type UserContextValues = {
