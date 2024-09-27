@@ -66,7 +66,7 @@ export function Home() {
               <Link to="/register" className={buttonLayout}>
                 Register
               </Link>
-              <Link to="/sign-up" className={buttonLayout}>
+              <Link to="/sign-in" className={buttonLayout}>
                 Sign In
               </Link>
             </div>
@@ -80,7 +80,7 @@ export function Home() {
         </div>
       )}
       {user && (
-        <div className="px-[15px] pt-[20px]">
+        <div className="pt-[20px]">
           <h1 className="text-[24px]">My Habit Calendars</h1>
         </div>
       )}

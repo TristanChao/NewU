@@ -28,6 +28,40 @@ export function readToken(): string | undefined {
   return (JSON.parse(auth) as Auth).token;
 }
 
+export async function signIn(
+  username: string,
+  password: string,
+  displayName: string
+): Promise<User> {
+  const req = {
+    method: 'post',
+    body: JSON.stringify({
+      username,
+      password,
+      displayName: displayName ? displayName : username,
+    }),
+    headers: {
+      'content-type': 'application/json',
+    },
+  };
+  const res = await fetch('/api/auth/sign-up', req);
+  if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
+  const newUser = (await res.json()) as User;
+  return newUser;
+}
+
+type Calendar = {
+  name: string;
+  desc: string;
+  color: string;
+};
+export async function readCalendars(): Promise<Calendar[]> {
+  const res = await fetch('/api/calendars');
+  if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
+  const calendars = (await res.json()) as Calendar[];
+  return calendars;
+}
+
 // export type UnsavedTodo = {
 //   task: string;
 //   isCompleted: boolean;

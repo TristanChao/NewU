@@ -21,7 +21,9 @@ export function Header() {
           <h1 className="text-[32px] font-bold">NewU</h1>
           {user && (
             <div className="flex items-center">
-              <span className="h-fit mr-[20px]">{user?.displayName}</span>
+              <h1 className="h-fit mr-[20px] text-lg inline-block">
+                {user?.displayName}
+              </h1>
               <button
                 type="button"
                 ref={menuBtnRef}

@@ -94,13 +94,13 @@ app.post('/api/auth/sign-in', async (req, res, next) => {
 });
 
 // gets a list of all calendars for the user currently signed in
-app.get('/api/habits', async (req, res, next) => {
+app.get('/api/calendars', async (req, res, next) => {
   try {
     const sql = `
       select *
       from "calendars"
-      where "userId" = $1
-      order by "userId";
+      where "ownerId" = $1
+      order by "calendarId";
     `;
     const result = await db.query(sql, [req.user?.userId]);
     res.json(result.rows);
