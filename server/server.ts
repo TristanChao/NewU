@@ -93,23 +93,7 @@ app.post('/api/auth/sign-in', async (req, res, next) => {
   }
 });
 
-// checks the database to see if the account with username 'demo' exists
-app.get('/api/users/demo', async (req, res, next) => {
-  try {
-    const sql = `
-      select "userId",
-             "username"
-      from "users"
-      where "username" = 'demo';
-    `;
-    const result = await db.query(sql);
-    const demoExists = !!result.rows[0];
-    res.json({ demoExists });
-  } catch (err) {
-    next(err);
-  }
-});
-
+// gets a list of all calendars for the user currently signed in
 app.get('/api/habits', async (req, res, next) => {
   try {
     const sql = `

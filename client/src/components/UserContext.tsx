@@ -1,4 +1,4 @@
-import { ReactNode, createContext, useState } from 'react';
+import { ReactNode, createContext, useCallback, useState } from 'react';
 import { removeAuth, saveAuth } from '../lib';
 
 export type User = {
@@ -27,11 +27,11 @@ export function UserProvider({ children }: Props) {
   const [user, setUser] = useState<User>();
   const [token, setToken] = useState<string>();
 
-  function handleSignIn(user: User, token: string) {
+  const handleSignIn = useCallback((user: User, token: string) => {
     setUser(user);
     setToken(token);
     saveAuth(user, token);
-  }
+  }, []);
 
   function handleSignOut() {
     setUser(undefined);
