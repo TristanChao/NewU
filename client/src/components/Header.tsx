@@ -39,7 +39,13 @@ export function Header() {
         buttonRef={menuBtnRef}
         onShadeClick={() => setMenuIsOpen(!menuIsOpen)}>
         <ul>
-          <li>{user && <a onClick={handleLogoutClick}>Log Out</a>}</li>
+          <li>
+            {user && (
+              <a className="cursor-pointer" onClick={handleLogoutClick}>
+                Log Out
+              </a>
+            )}
+          </li>
         </ul>
       </Popup>
     </>
