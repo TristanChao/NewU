@@ -23,6 +23,7 @@ export function Header() {
             <div className="flex items-center">
               <span className="h-fit mr-[20px]">{user?.displayName}</span>
               <button
+                type="button"
                 ref={menuBtnRef}
                 className="text-[32px]"
                 onClick={() => setMenuIsOpen(true)}>
@@ -36,15 +37,13 @@ export function Header() {
       </div>
       <Popup
         isOpen={menuIsOpen}
-        buttonRef={menuBtnRef}
-        onShadeClick={() => setMenuIsOpen(!menuIsOpen)}>
+        popupAccessRef={menuBtnRef}
+        onShadeClick={() => setMenuIsOpen(false)}>
         <ul>
           <li>
-            {user && (
-              <a className="cursor-pointer" onClick={handleLogoutClick}>
-                Log Out
-              </a>
-            )}
+            <a className="cursor-pointer" onClick={handleLogoutClick}>
+              Log Out
+            </a>
           </li>
         </ul>
       </Popup>
