@@ -12,7 +12,6 @@ CREATE TABLE "users" (
   "hashedPassword"  text            not null,
   "displayName"     text            not null,
   "createdAt"       timestamptz(6)  not null default now(),
-  "updatedAt"       timestamptz(6)  not null default now(),
   unique("username")
 );
 
@@ -23,14 +22,13 @@ CREATE TABLE "calendars" (
   "name"        text            not null,
   "color"       text            not null,
   "desc"        text            not null,
-  "createdAt"   timestamptz(6)  not null default now(),
-  "updatedAt"   timestamptz(6)  not null default now()
+  "createdAt"   timestamptz(6)  not null default now()
 );
 
 CREATE TABLE "calendarAccess" (
   "calendarId"  integer         not null,
   "userId"      integer         not null,
-  "updatedAt"   timestamptz(6)  not null default now()
+  "createdAt"   timestamptz(6)  not null default now()
 );
 
 CREATE TABLE "habitMarks" (
@@ -38,7 +36,7 @@ CREATE TABLE "habitMarks" (
   "calendarId"  integer         not null,
   "date"        text            not null,
   "isCompleted" boolean         not null,
-  "updatedAt"   timestamptz(6)  not null default now()
+  "createdAt"   timestamptz(6)  not null default now()
 );
 
 ALTER TABLE "calendars" ADD FOREIGN KEY ("owner") REFERENCES "users" ("userId");
