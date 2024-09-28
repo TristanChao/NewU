@@ -70,6 +70,7 @@ app.post('/api/auth/sign-in', async (req, res, next) => {
     if (!username || !password) {
       throw new ClientError(401, 'invalid login');
     }
+
     const sql = `
       select "userId",
              "hashedPassword",
@@ -78,16 +79,18 @@ app.post('/api/auth/sign-in', async (req, res, next) => {
       where "username" = $1;
     `;
     const result = await db.query(sql, [username]);
-    if (!result.rows[0])
+    if (!result.rows[0]) {
       throw new ClientError(404, `user ${username} not found`);
+    }
+
     const { userId, hashedPassword, displayName } = result.rows[0];
-    if (await argon2.verify(hashedPassword, password)) {
-      const payload = { userId, username, displayName };
-      const token = jwt.sign(payload, hashKey);
-      res.json({ user: payload, token });
-    } else {
+    if (!(await argon2.verify(hashedPassword, password))) {
       throw new ClientError(401, 'invalid login');
     }
+
+    const payload = { userId, username, displayName };
+    const token = jwt.sign(payload, hashKey);
+    res.json({ user: payload, token });
   } catch (err) {
     next(err);
   }

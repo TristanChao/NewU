@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useUser } from '../components/useUser';
 import { useEffect, useState } from 'react';
+import { signIn } from '../lib';
 
 export function Home() {
   const { user, handleSignIn } = useUser();
@@ -18,19 +19,11 @@ export function Home() {
   async function onDemoClick() {
     try {
       setIsLoading(true);
-      const req = {
-        body: JSON.stringify({
-          username: 'demo',
-          password: 'demoPassword987',
-        }),
-        headers: {
-          'content-type': 'application/json',
-        },
-        method: 'post',
+      const body = {
+        username: 'demo',
+        password: 'demoPassword987',
       };
-      const res = await fetch('/api/auth/sign-in', req);
-      if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
-      const { user, token } = await res.json();
+      const { user, token } = await signIn(body);
       handleSignIn(user, token);
       console.log('signed in', user);
     } catch (err) {

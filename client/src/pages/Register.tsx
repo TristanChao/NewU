@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { BiLoaderCircle } from 'react-icons/bi';
-import { User } from '../components/UserContext';
-import { useNavigate } from 'react-router-dom';
+import { FaChevronLeft } from 'react-icons/fa';
+import { Link, useNavigate } from 'react-router-dom';
+import { signUp } from '../lib';
 
 export function Register() {
   const [usernameText, setUsernameText] = useState<string>();
@@ -19,20 +20,16 @@ export function Register() {
       event.preventDefault();
       setIsLoading(true);
 
-      const req = {
-        method: 'post',
-        body: JSON.stringify({
-          username: usernameText,
-          password: passText,
-          displayName: displayNameText ? displayNameText : usernameText,
-        }),
-        headers: {
-          'content-type': 'application/json',
-        },
+      if (!usernameText || !passText) {
+        throw new Error('username, password');
+      }
+
+      const body = {
+        username: usernameText,
+        password: passText,
+        displayName: displayNameText,
       };
-      const res = await fetch('/api/auth/sign-up', req);
-      if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
-      const newUser = (await res.json()) as User;
+      const newUser = await signUp(body);
       alert(`Registered ${newUser.username}`);
       navigate('/sign-in');
     } catch (err) {
@@ -69,7 +66,13 @@ export function Register() {
             onChange={(e) => setDisplayNameText(e.target.value)}
             className={inputStyle}
           />
-          <div className="flex justify-end pt-2">
+          <div className="flex justify-between pt-2">
+            <Link
+              to="/"
+              className="w-[70px] h-[35px] flex justify-center items-center">
+              <FaChevronLeft />
+              Back
+            </Link>
             <button
               type="submit"
               className="w-[70px] h-[35px] rounded flex justify-center items-center"

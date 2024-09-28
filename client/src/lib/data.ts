@@ -28,11 +28,13 @@ export function readToken(): string | undefined {
   return (JSON.parse(auth) as Auth).token;
 }
 
-export async function signIn(
-  username: string,
-  password: string,
-  displayName: string
-): Promise<User> {
+type SignUpParams = {
+  username: string;
+  password: string;
+  displayName: string | undefined;
+};
+export async function signUp(params: SignUpParams): Promise<User> {
+  const { username, password, displayName } = params;
   const req = {
     method: 'post',
     body: JSON.stringify({
@@ -48,6 +50,28 @@ export async function signIn(
   if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
   const newUser = (await res.json()) as User;
   return newUser;
+}
+
+type SignInParams = {
+  username: string;
+  password: string;
+};
+export async function signIn(params: SignInParams): Promise<Auth> {
+  const { username, password } = params;
+  const req = {
+    method: 'post',
+    body: JSON.stringify({
+      username,
+      password,
+    }),
+    headers: {
+      'content-type': 'application/json',
+    },
+  };
+  const res = await fetch('/api/auth/sign-in', req);
+  if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
+  const user = (await res.json()) as Auth;
+  return user;
 }
 
 type Calendar = {

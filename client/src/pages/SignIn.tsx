@@ -1,13 +1,9 @@
 import React, { useState } from 'react';
 import { BiLoaderCircle } from 'react-icons/bi';
-import { User } from '../components/UserContext';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useUser } from '../components/useUser';
-
-type AuthData = {
-  user: User;
-  token: string;
-};
+import { signIn } from '../lib';
+import { FaChevronLeft } from 'react-icons/fa';
 
 export function SignIn() {
   const [usernameText, setUsernameText] = useState<string>();
@@ -25,19 +21,16 @@ export function SignIn() {
       event.preventDefault();
       setIsLoading(true);
 
-      const req = {
-        method: 'post',
-        body: JSON.stringify({
-          username: usernameText,
-          password: passText,
-        }),
-        headers: {
-          'content-type': 'application/json',
-        },
+      if (!usernameText || !passText) {
+        throw new Error('username and password are required fields');
+      }
+
+      const body = {
+        username: usernameText,
+        password: passText,
       };
-      const res = await fetch('/api/auth/sign-in', req);
-      if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
-      const { user, token } = (await res.json()) as AuthData;
+
+      const { user, token } = await signIn(body);
       handleSignIn(user, token);
       alert(`Signed in ${user.username}`);
       navigate('/');
@@ -71,7 +64,13 @@ export function SignIn() {
             className={inputStyle}
             type="password"
           />
-          <div className="flex justify-end pt-2">
+          <div className="flex justify-between pt-2">
+            <Link
+              to="/"
+              className="w-[70px] h-[35px] flex justify-center items-center">
+              <FaChevronLeft />
+              Back
+            </Link>
             <button
               type="submit"
               className="w-[70px] h-[35px] rounded flex justify-center items-center"
