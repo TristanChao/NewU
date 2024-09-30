@@ -17,11 +17,12 @@ CREATE TABLE "users" (
 
 CREATE TABLE "calendars" (
   "calendarId"  serial          PRIMARY KEY,
-  "owner"       integer         not null,
+  "ownerId"     integer         not null,
   "type"        text            not null,
   "name"        text            not null,
   "color"       text            not null,
   "desc"        text            not null,
+  "goal"        integer          not null,
   "createdAt"   timestamptz(6)  not null default now()
 );
 
@@ -39,7 +40,7 @@ CREATE TABLE "habitMarks" (
   "createdAt"   timestamptz(6)  not null default now()
 );
 
-ALTER TABLE "calendars" ADD FOREIGN KEY ("owner") REFERENCES "users" ("userId");
+ALTER TABLE "calendars" ADD FOREIGN KEY ("ownerId") REFERENCES "users" ("userId");
 
 ALTER TABLE "calendarAccess" ADD FOREIGN KEY ("calendarId") REFERENCES "calendars" ("calendarId");
 

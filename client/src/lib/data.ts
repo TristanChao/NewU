@@ -28,6 +28,64 @@ export function readToken(): string | undefined {
   return (JSON.parse(auth) as Auth).token;
 }
 
+type SignUpParams = {
+  username: string;
+  password: string;
+  displayName: string | undefined;
+};
+export async function signUp(params: SignUpParams): Promise<User> {
+  const { username, password, displayName } = params;
+  const req = {
+    method: 'post',
+    body: JSON.stringify({
+      username,
+      password,
+      displayName: displayName ? displayName : username,
+    }),
+    headers: {
+      'content-type': 'application/json',
+    },
+  };
+  const res = await fetch('/api/auth/sign-up', req);
+  if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
+  const newUser = (await res.json()) as User;
+  return newUser;
+}
+
+type SignInParams = {
+  username: string;
+  password: string;
+};
+export async function signIn(params: SignInParams): Promise<Auth> {
+  const { username, password } = params;
+  const req = {
+    method: 'post',
+    body: JSON.stringify({
+      username,
+      password,
+    }),
+    headers: {
+      'content-type': 'application/json',
+    },
+  };
+  const res = await fetch('/api/auth/sign-in', req);
+  if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
+  const user = (await res.json()) as Auth;
+  return user;
+}
+
+type Calendar = {
+  name: string;
+  desc: string;
+  color: string;
+};
+export async function readCalendars(): Promise<Calendar[]> {
+  const res = await fetch('/api/calendars');
+  if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
+  const calendars = (await res.json()) as Calendar[];
+  return calendars;
+}
+
 // export type UnsavedTodo = {
 //   task: string;
 //   isCompleted: boolean;

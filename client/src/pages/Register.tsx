@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
 import { BiLoaderCircle } from 'react-icons/bi';
-import { Link, useNavigate } from 'react-router-dom';
-import { useUser } from '../components/useUser';
-import { signIn } from '../lib';
 import { FaChevronLeft } from 'react-icons/fa';
+import { Link, useNavigate } from 'react-router-dom';
+import { signUp } from '../lib';
 
-export function SignIn() {
+export function Register() {
   const [usernameText, setUsernameText] = useState<string>();
   const [passText, setPassText] = useState<string>();
+  const [displayNameText, setDisplayNameText] = useState<string>();
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { handleSignIn } = useUser();
 
   const inputStyle = 'border border-gray-400 rounded px-[5px] py-[3px]';
 
@@ -22,23 +21,19 @@ export function SignIn() {
       setIsLoading(true);
 
       if (!usernameText || !passText) {
-        throw new Error('username and password are required fields');
+        throw new Error('username, password');
       }
 
       const body = {
         username: usernameText,
         password: passText,
+        displayName: displayNameText,
       };
-
-      const { user, token } = await signIn(body);
-      handleSignIn(user, token);
-      alert(`Signed in ${user.username}`);
-      navigate('/');
+      const newUser = await signUp(body);
+      alert(`Registered ${newUser.username}`);
+      navigate('/sign-in');
     } catch (err) {
       console.error(err);
-      alert(
-        'Oops, something went wrong! Double check your username and password and try again.'
-      );
     } finally {
       setIsLoading(false);
     }
@@ -46,7 +41,7 @@ export function SignIn() {
 
   return (
     <div className="mx-[15px]">
-      <h1 className="text-[24px] my-3">Sign In</h1>
+      <h1 className="text-[24px] my-3">Register</h1>
       <form onSubmit={handleSubmit}>
         <div className="flex flex-col space-y-2">
           <label>Username</label>
@@ -63,6 +58,13 @@ export function SignIn() {
             onChange={(e) => setPassText(e.target.value)}
             className={inputStyle}
             type="password"
+          />
+          <label>Display Name &#40;optional&#41;</label>
+          <input
+            placeholder={usernameText}
+            value={displayNameText ? displayNameText : ''}
+            onChange={(e) => setDisplayNameText(e.target.value)}
+            className={inputStyle}
           />
           <div className="flex justify-between pt-2">
             <Link

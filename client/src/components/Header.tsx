@@ -1,5 +1,5 @@
 import { TiThMenu } from 'react-icons/ti';
-import { Outlet } from 'react-router-dom';
+import { Link, Outlet } from 'react-router-dom';
 import { useUser } from './useUser';
 import { Popup } from './Popup';
 import { useRef, useState } from 'react';
@@ -18,11 +18,19 @@ export function Header() {
     <>
       <div>
         <div className="p-2 px-[15px] flex justify-between">
-          <h1 className="text-[32px] font-bold">NewU</h1>
+          <Link
+            to="/"
+            className="text-[32px] font-bold cursor-pointer"
+            style={{ fontFamily: 'Arvo, serif' }}>
+            NewU
+          </Link>
           {user && (
             <div className="flex items-center">
-              <span className="h-fit mr-[20px]">{user?.displayName}</span>
+              <h1 className="h-fit mr-[20px] text-lg inline-block">
+                {user?.displayName}
+              </h1>
               <button
+                type="button"
                 ref={menuBtnRef}
                 className="text-[32px]"
                 onClick={() => setMenuIsOpen(true)}>
@@ -36,15 +44,13 @@ export function Header() {
       </div>
       <Popup
         isOpen={menuIsOpen}
-        buttonRef={menuBtnRef}
-        onShadeClick={() => setMenuIsOpen(!menuIsOpen)}>
+        popupAccessRef={menuBtnRef}
+        onShadeClick={() => setMenuIsOpen(false)}>
         <ul>
           <li>
-            {user && (
-              <a className="cursor-pointer" onClick={handleLogoutClick}>
-                Log Out
-              </a>
-            )}
+            <a className="cursor-pointer" onClick={handleLogoutClick}>
+              Log Out
+            </a>
           </li>
         </ul>
       </Popup>

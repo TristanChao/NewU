@@ -33,11 +33,11 @@ export function UserProvider({ children }: Props) {
     saveAuth(user, token);
   }, []);
 
-  function handleSignOut() {
+  const handleSignOut = useCallback(() => {
     setUser(undefined);
     setToken(undefined);
     removeAuth();
-  }
+  }, []);
 
   const contextValue = { user, token, handleSignIn, handleSignOut };
   return (
