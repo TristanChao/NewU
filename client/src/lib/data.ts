@@ -7,6 +7,20 @@ type Auth = {
   token: string;
 };
 
+/**
+ * Converts a Date object of today's date to a string.
+ * @returns A string of the format 'yyyy-mm-dd'.
+ */
+export function todayToString() {
+  const today = new Date();
+  const year = today.getFullYear().toString();
+  const monthNum = today.getMonth();
+  const month = (monthNum < 10 ? '0' : '') + monthNum.toString();
+  const todayNum = today.getDate();
+  const date = (todayNum < 10 ? '0' : '') + todayNum.toString();
+  return `${year}-${month}-${date}`;
+}
+
 export function saveAuth(user: User, token: string): void {
   const auth: Auth = { user, token };
   localStorage.setItem(authKey, JSON.stringify(auth));
@@ -74,16 +88,34 @@ export async function signIn(params: SignInParams): Promise<Auth> {
   return user;
 }
 
-type Calendar = {
+export type Calendar = {
+  calendarId: number;
   name: string;
   desc: string;
   color: string;
 };
 export async function readCalendars(): Promise<Calendar[]> {
-  const res = await fetch('/api/calendars');
+  const res = await fetch('/api/calendars', {
+    headers: { Authorization: ('Bearer ' + readToken()) as string },
+  });
   if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
   const calendars = (await res.json()) as Calendar[];
   return calendars;
+}
+
+export type Mark = {
+  calendarId: number;
+  ownerId: number;
+  date: string;
+  isCompleted: boolean;
+};
+export async function readDateMarks(date: string): Promise<Mark[]> {
+  const res = await fetch(`/api/marks/${date}`, {
+    headers: { Authorization: ('Bearer ' + readToken()) as string },
+  });
+  if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
+  const marks = (await res.json()) as Mark[];
+  return marks;
 }
 
 // export type UnsavedTodo = {

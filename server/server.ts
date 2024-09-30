@@ -4,7 +4,7 @@ import express from 'express';
 import pg from 'pg';
 import argon2 from 'argon2';
 import jwt from 'jsonwebtoken';
-import { ClientError, errorMiddleware } from './lib/index.js';
+import { authMiddleware, ClientError, errorMiddleware } from './lib/index.js';
 
 type Auth = {
   username: string;
@@ -97,7 +97,7 @@ app.post('/api/auth/sign-in', async (req, res, next) => {
 });
 
 // gets a list of all calendars for the user currently signed in
-app.get('/api/calendars', async (req, res, next) => {
+app.get('/api/calendars', authMiddleware, async (req, res, next) => {
   try {
     const sql = `
       select *
@@ -106,6 +106,23 @@ app.get('/api/calendars', async (req, res, next) => {
       order by "calendarId";
     `;
     const result = await db.query(sql, [req.user?.userId]);
+    res.json(result.rows);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// gets a list of all the markers for a specified date belonging to the current user
+app.get('/api/marks/:date', authMiddleware, async (req, res, next) => {
+  try {
+    const { date } = req.params;
+    const sql = `
+      select *
+      from "habitMarks"
+      where "date" = $1
+        and "ownerId" = $2;
+    `;
+    const result = await db.query(sql, [date, req.user?.userId]);
     res.json(result.rows);
   } catch (err) {
     next(err);

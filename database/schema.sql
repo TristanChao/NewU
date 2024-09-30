@@ -35,6 +35,7 @@ CREATE TABLE "calendarAccess" (
 CREATE TABLE "habitMarks" (
   "markId"      serial          PRIMARY KEY,
   "calendarId"  integer         not null,
+  "ownerId"     integer         not null,
   "date"        text            not null,
   "isCompleted" boolean         not null,
   "createdAt"   timestamptz(6)  not null default now()
@@ -47,3 +48,5 @@ ALTER TABLE "calendarAccess" ADD FOREIGN KEY ("calendarId") REFERENCES "calendar
 ALTER TABLE "calendarAccess" ADD FOREIGN KEY ("userId") REFERENCES "users" ("userId");
 
 ALTER TABLE "habitMarks" ADD FOREIGN KEY ("calendarId") REFERENCES "calendars" ("calendarId");
+
+ALTER TABLE "habitMarks" ADD FOREIGN KEY ("ownerId") REFERENCES "users" ("userId");

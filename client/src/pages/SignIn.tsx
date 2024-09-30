@@ -45,7 +45,7 @@ export function SignIn() {
   }
 
   return (
-    <div className="mx-[15px]">
+    <>
       <h1 className="text-[24px] my-3">Sign In</h1>
       <form onSubmit={handleSubmit}>
         <div className="flex flex-col space-y-2">
@@ -65,9 +65,7 @@ export function SignIn() {
             type="password"
           />
           <div className="flex justify-between pt-2">
-            <Link
-              to="/"
-              className="w-[70px] h-[35px] flex justify-center items-center">
+            <Link to="/" className="flex justify-center items-center">
               <FaChevronLeft />
               Back
             </Link>
@@ -80,6 +78,6 @@ export function SignIn() {
           </div>
         </div>
       </form>
-    </div>
+    </>
   );
 }

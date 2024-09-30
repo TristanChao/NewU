@@ -17,7 +17,7 @@ export function Header() {
   return (
     <>
       <div>
-        <div className="p-2 px-[15px] flex justify-between">
+        <div className="p-2 px-[15px] flex justify-between sm:px-[50px]">
           <Link
             to="/"
             className="text-[32px] font-bold cursor-pointer"
@@ -40,7 +40,9 @@ export function Header() {
           )}
         </div>
         <hr className="border-[1px]" />
-        <Outlet />
+        <div className="mx-[15px] sm:mx-[50px]">
+          <Outlet />
+        </div>
       </div>
       <Popup
         isOpen={menuIsOpen}
