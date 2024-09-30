@@ -1,3 +1,3 @@
 export function NotFound() {
-  return <div>Page Not Found</div>;
+  return <div className="px-[15px] big:px-[50px]">Page Not Found</div>;
 }

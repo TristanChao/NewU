@@ -40,7 +40,7 @@ export function Register() {
   }
 
   return (
-    <div className="mx-[15px]">
+    <div className="px-[15px] big:px-[50px]">
       <h1 className="text-[24px] my-3">Register</h1>
       <form onSubmit={handleSubmit}>
         <div className="flex flex-col space-y-2">
@@ -67,9 +67,7 @@ export function Register() {
             className={inputStyle}
           />
           <div className="flex justify-between pt-2">
-            <Link
-              to="/"
-              className="w-[70px] h-[35px] flex justify-center items-center">
+            <Link to="/" className="flex justify-center items-center">
               <FaChevronLeft />
               Back
             </Link>
@@ -77,7 +75,13 @@ export function Register() {
               type="submit"
               className="w-[70px] h-[35px] rounded flex justify-center items-center"
               style={{ backgroundColor: buttonColor }}>
-              {isLoading ? <BiLoaderCircle /> : 'Submit'}
+              {isLoading ? (
+                <div className="spin">
+                  <BiLoaderCircle />
+                </div>
+              ) : (
+                'Submit'
+              )}
             </button>
           </div>
         </div>

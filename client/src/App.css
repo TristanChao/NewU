@@ -10,6 +10,22 @@ h1 {
   min-width: 270px;
 }
 
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .spin {
+    animation: spin infinite 2s linear;
+  }
+}
+
 /* .logo {
   height: 6em;
   padding: 1.5em;

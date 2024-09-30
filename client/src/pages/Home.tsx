@@ -1,12 +1,23 @@
 import { Link } from 'react-router-dom';
 import { useUser } from '../components/useUser';
 import { useEffect, useState } from 'react';
-import { signIn } from '../lib';
+import {
+  Calendar,
+  Mark,
+  readCalendars,
+  readDateMarks,
+  signIn,
+  todayToString,
+} from '../lib';
+import { ListCalendar } from '../components/ListCalendar';
 
 export function Home() {
   const { user, handleSignIn } = useUser();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<unknown>();
+  const [calendars, setCalendars] = useState<Calendar[]>([]);
+  const [marks, setMarks] = useState<Mark[]>([]);
+  const [calendarArray, setCalendarArray] = useState<JSX.Element[]>([]);
 
   useEffect(() => {
     const localAuthJson = localStorage.getItem('um.auth');
@@ -15,6 +26,39 @@ export function Home() {
       handleSignIn(localAuth.user, localAuth.token);
     }
   }, [handleSignIn]);
+
+  useEffect(() => {
+    async function read() {
+      try {
+        if (!user) return;
+        setCalendars(await readCalendars());
+        setMarks(await readDateMarks(todayToString()));
+      } catch (err) {
+        console.error(err);
+        setError(err);
+      }
+    }
+
+    read();
+  }, [user]);
+
+  useEffect(() => {
+    const listCalendarArray: JSX.Element[] = [];
+    calendars.forEach((c, i) => {
+      const dayMark = marks.find((mark) => mark.calendarId === c.calendarId);
+      const dayMarkIsComplete = dayMark ? dayMark.isCompleted : false;
+      listCalendarArray.push(
+        <ListCalendar
+          key={i}
+          calendarId={c.calendarId}
+          name={c.name}
+          color={c.color}
+          mark={dayMarkIsComplete}
+        />
+      );
+    });
+    setCalendarArray(listCalendarArray);
+  }, [calendars, marks]);
 
   async function onDemoClick() {
     try {
@@ -25,7 +69,6 @@ export function Home() {
       };
       const { user, token } = await signIn(body);
       handleSignIn(user, token);
-      console.log('signed in', user);
     } catch (err) {
       console.error(err);
       setError(err);
@@ -50,7 +93,7 @@ export function Home() {
     'py-[5px] px-[10px] rounded bg-[#B9FBFF] cursor-pointer text-xl';
 
   return (
-    <div className="mx-[15px]">
+    <div className="px-[15px] big:px-[50px]">
       {!user && (
         <div className="mt-[30vh] flex justify-center">
           <div className="flex flex-col items-center">
@@ -74,7 +117,14 @@ export function Home() {
       )}
       {user && (
         <div className="pt-[20px]">
-          <h1 className="text-[24px]">My Habit Calendars</h1>
+          <h1 className="text-[24px] mb-[10px]">My Habit Calendars</h1>
+          {calendarArray.length > 0 ? (
+            calendarArray
+          ) : (
+            <p className="text-center text-gray-500">
+              You don't have any calendars yet!
+            </p>
+          )}
         </div>
       )}
     </div>
