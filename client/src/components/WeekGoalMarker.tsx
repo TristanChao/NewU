@@ -5,9 +5,8 @@ type Props = {
   mark: boolean;
   color: string;
 };
-export function HabitMarker({ mark, color }: Props) {
-  let buttonStyle = `rounded-full border-[5px]
-    w-[40px] h-[40px] cursor-pointer
+export function WeekGoalMarker({ mark, color }: Props) {
+  let buttonStyle = `rounded-full border-[5px] w-[50px] h-[50px] cursor-pointer
     flex justify-center items-center border-[${convertColor(color)}]`;
 
   if (!mark) {

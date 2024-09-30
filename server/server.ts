@@ -112,6 +112,29 @@ app.get('/api/calendars', authMiddleware, async (req, res, next) => {
   }
 });
 
+app.get(
+  '/api/calendars/:calendarId',
+  authMiddleware,
+  async (req, res, next) => {
+    try {
+      const { calendarId } = req.params;
+      const sql = `
+        select *
+        from "calendars"
+        where "calendarId" = $1
+          and "ownerId" = $2
+        order by "calendarId";
+      `;
+      const result = await db.query(sql, [calendarId, req.user?.userId]);
+      const calendar = result.rows[0];
+      if (!calendar) throw new ClientError(400, 'calendar not found');
+      res.json(calendar);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
 // gets a list of all the markers for a specified date belonging to the current user
 app.get('/api/marks/:date', authMiddleware, async (req, res, next) => {
   try {
@@ -123,6 +146,22 @@ app.get('/api/marks/:date', authMiddleware, async (req, res, next) => {
         and "ownerId" = $2;
     `;
     const result = await db.query(sql, [date, req.user?.userId]);
+    res.json(result.rows);
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get('/api/marks/:calendarId', authMiddleware, async (req, res, next) => {
+  try {
+    const { calendarId } = req.params;
+    const sql = `
+      select *
+      from "habitMarks"
+      where "calendarId" = $1
+        and "ownerId" = $2;
+    `;
+    const result = await db.query(sql, [calendarId, req.user?.userId]);
     res.json(result.rows);
   } catch (err) {
     next(err);

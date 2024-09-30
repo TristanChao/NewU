@@ -45,7 +45,7 @@ export function SignIn() {
   }
 
   return (
-    <>
+    <div className="px-[15px] big:px-[50px]">
       <h1 className="text-[24px] my-3">Sign In</h1>
       <form onSubmit={handleSubmit}>
         <div className="flex flex-col space-y-2">
@@ -84,6 +84,6 @@ export function SignIn() {
           </div>
         </div>
       </form>
-    </>
+    </div>
   );
 }

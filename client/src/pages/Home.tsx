@@ -93,7 +93,7 @@ export function Home() {
     'py-[5px] px-[10px] rounded bg-[#B9FBFF] cursor-pointer text-xl';
 
   return (
-    <>
+    <div className="px-[15px] big:px-[50px]">
       {!user && (
         <div className="mt-[30vh] flex justify-center">
           <div className="flex flex-col items-center">
@@ -127,6 +127,6 @@ export function Home() {
           )}
         </div>
       )}
-    </>
+    </div>
   );
 }

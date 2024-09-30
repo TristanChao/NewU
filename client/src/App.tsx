@@ -8,7 +8,7 @@ import { Header } from './components/Header.tsx';
 import { Home } from './pages/Home.tsx';
 import { Register } from './pages/Register.tsx';
 import { SignIn } from './pages/SignIn.tsx';
-import { Calendar } from './pages/Calendar.tsx';
+import { CalendarDetails } from './pages/CalendarDetails.tsx';
 import { NotFound } from './pages/NotFound.tsx';
 
 export default function App() {
@@ -19,7 +19,7 @@ export default function App() {
           <Route index element={<Home />} />
           <Route path="/register" element={<Register />} />
           <Route path="/sign-in" element={<SignIn />} />
-          <Route path="/calendar/:calendarId" element={<Calendar />} />
+          <Route path="/calendar/:calendarId" element={<CalendarDetails />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
