@@ -5,29 +5,41 @@ type Props = {
   color: string;
 };
 export function HabitMarker({ mark, color }: Props) {
-  let buttonStyle = 'rounded-full border-[5px]';
+  let buttonStyle =
+    'rounded-full border-[5px] w-[50px] h-[50px] cursor-pointer';
+
+  if (!mark) {
+    buttonStyle += ' big:hover:bg-[#64646420]';
+  }
 
   switch (color) {
     case 'red':
-      buttonStyle += ' bg-[#FF5A5A] border-[#FF5A5A]';
+      buttonStyle += ' border-[#FF5A5A]';
+      if (mark) buttonStyle += ' bg-[#FF5A5A]';
       break;
     case 'orange':
-      buttonStyle += ' bg-[#F29930] border-[#F29930]';
+      buttonStyle += ' border-[#F29930]';
+      if (mark) buttonStyle += ' bg-[#F29930]';
       break;
     case 'yellow':
-      buttonStyle += ' bg-[#F2EA30] border-[#F2EA30]';
+      buttonStyle += ' border-[#F2EA30]';
+      if (mark) buttonStyle += ' bg-[#F2EA30]';
       break;
     case 'green':
-      buttonStyle += ' bg-[#31F22D] border-[#31F22D]';
+      buttonStyle += ' border-[#31F22D]';
+      if (mark) buttonStyle += ' bg-[#31F22D]';
       break;
     case 'blue':
-      buttonStyle += ' bg-[#35E6F1] border-[#35E6F1]';
+      buttonStyle += ' border-[#35E6F1]';
+      if (mark) buttonStyle += ' bg-[#35E6F1]';
       break;
     case 'purple':
-      buttonStyle += ' bg-[#D289FF] border-[#D289FF]';
+      buttonStyle += ' border-[#D289FF]';
+      if (mark) buttonStyle += ' bg-[#D289FF]';
       break;
     case 'pink':
-      buttonStyle += ' bg-[#FF7EFA] border-[#FF7EFA]';
+      buttonStyle += ' border-[#FF7EFA]';
+      if (mark) buttonStyle += ' bg-[#FF7EFA]';
       break;
   }
 

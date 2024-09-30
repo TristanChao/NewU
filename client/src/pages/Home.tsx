@@ -50,6 +50,7 @@ export function Home() {
       listCalendarArray.push(
         <ListCalendar
           key={i}
+          calendarId={c.calendarId}
           name={c.name}
           color={c.color}
           mark={dayMarkIsComplete}
@@ -116,8 +117,14 @@ export function Home() {
       )}
       {user && (
         <div className="pt-[20px]">
-          <h1 className="text-[24px]">My Habit Calendars</h1>
-          {calendarArray}
+          <h1 className="text-[24px] mb-[10px]">My Habit Calendars</h1>
+          {calendarArray.length > 0 ? (
+            calendarArray
+          ) : (
+            <p className="text-center text-gray-500">
+              You don't have any calendars yet!
+            </p>
+          )}
         </div>
       )}
     </>

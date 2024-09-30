@@ -17,7 +17,7 @@ export function Header() {
   return (
     <>
       <div>
-        <div className="p-2 px-[15px] flex justify-between sm:px-[50px]">
+        <div className="p-2 px-[15px] flex justify-between big:px-[50px] min-w-[300px]">
           <Link
             to="/"
             className="text-[32px] font-bold cursor-pointer"
@@ -40,7 +40,7 @@ export function Header() {
           )}
         </div>
         <hr className="border-[1px]" />
-        <div className="mx-[15px] sm:mx-[50px]">
+        <div className="px-[15px] big:px-[50px] min-w-[300px]">
           <Outlet />
         </div>
       </div>

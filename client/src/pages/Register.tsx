@@ -75,7 +75,13 @@ export function Register() {
               type="submit"
               className="w-[70px] h-[35px] rounded flex justify-center items-center"
               style={{ backgroundColor: buttonColor }}>
-              {isLoading ? <BiLoaderCircle /> : 'Submit'}
+              {isLoading ? (
+                <div className="spin">
+                  <BiLoaderCircle />
+                </div>
+              ) : (
+                'Submit'
+              )}
             </button>
           </div>
         </div>
