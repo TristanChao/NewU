@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { HabitMarker } from './HabitMarker';
-import { convertColorLight } from '../lib';
+import { convertColorLightBg } from '../lib';
 
 type Props = {
   calendarId: number;
@@ -11,7 +11,7 @@ type Props = {
 export function ListCalendar({ calendarId, name, color, mark }: Props) {
   const calDivStyle = `rounded-[15px] flex justify-between items-center
     py-[5px] px-[10px] min-h-[75px] cursor-pointer
-    bg-[${convertColorLight(color)}]`;
+    bg-[${convertColorLightBg(color)}]`;
 
   return (
     <Link to={`/calendar/${calendarId}`}>

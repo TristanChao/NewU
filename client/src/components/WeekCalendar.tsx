@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { HabitMarker } from './HabitMarker';
-import { convertColorLight } from '../lib';
+import { convertColorLightBg } from '../lib';
 
 type Props = {
   color: string;
@@ -8,8 +8,9 @@ type Props = {
 export function WeekCalendar({ color }: Props) {
   const [days, setDays] = useState<JSX.Element[]>([]);
 
-  const calendarStyle = `flex justify-around rounded py-[10px]
-    bg-[${convertColorLight(color)}]`;
+  let calendarStyle = 'flex justify-around rounded py-[10px]';
+
+  calendarStyle += convertColorLightBg(color);
 
   useEffect(() => {
     const dayArray = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];

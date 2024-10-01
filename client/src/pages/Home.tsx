@@ -3,11 +3,11 @@ import { useUser } from '../components/useUser';
 import { useEffect, useState } from 'react';
 import {
   Calendar,
+  dateToString,
   Mark,
   readCalendars,
   readDateMarks,
   signIn,
-  todayToString,
 } from '../lib';
 import { ListCalendar } from '../components/ListCalendar';
 
@@ -32,7 +32,7 @@ export function Home() {
       try {
         if (!user) return;
         setCalendars(await readCalendars());
-        setMarks(await readDateMarks(todayToString()));
+        setMarks(await readDateMarks(dateToString()));
       } catch (err) {
         console.error(err);
         setError(err);

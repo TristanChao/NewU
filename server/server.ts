@@ -152,6 +152,23 @@ app.get('/api/marks/:date', authMiddleware, async (req, res, next) => {
   }
 });
 
+// gets a list of all the markers for a given week belonging to the current user
+app.get('/api/marks/week', authMiddleware, async (req, res, next) => {
+  try {
+    const { start, end } = req.body;
+    const sql = `
+      select *
+      from "habitMarks"
+      where "date" >= $1 and "date" <= $2
+        and "ownerId" = $3;
+    `;
+    const result = await db.query(sql, [start, end, req.user?.userId]);
+    res.json(result.rows);
+  } catch (err) {
+    next(err);
+  }
+});
+
 app.get('/api/marks/:calendarId', authMiddleware, async (req, res, next) => {
   try {
     const { calendarId } = req.params;

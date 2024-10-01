@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Calendar, convertColor, readCalendar } from '../lib';
+import { Calendar, convertColorBg, readCalendar } from '../lib';
 import { useParams } from 'react-router-dom';
 import { WeekGoalMarker } from '../components/WeekGoalMarker';
 import { WeekCalendar } from '../components/WeekCalendar';
@@ -43,9 +43,10 @@ export function CalendarDetails() {
     return <div>Can't find this calendar :&#40;</div>;
   }
 
-  const headerDivStyle = `bg-[${convertColor(calendar.color)}] py-[10px]
-    px-[15px]
-    big:px-[50px] min-h-[60px] flex items-center justify-between`;
+  let headerDivStyle = `py-[10px] px-[15px] big:px-[50px] min-h-[60px]
+    flex items-center justify-between`;
+
+  headerDivStyle += convertColorBg(calendar.color);
 
   return (
     <>

@@ -7,68 +7,176 @@ type Auth = {
   token: string;
 };
 
-/**
- * Converts a Date object of today's date to a string.
- * @returns A string of the format 'yyyy-mm-dd'.
- */
-export function todayToString() {
-  const today = new Date();
-  const year = today.getFullYear().toString();
-  const monthNum = today.getMonth() + 1;
-  const month = (monthNum < 10 ? '0' : '') + monthNum.toString();
-  const todayNum = today.getDate();
-  const date = (todayNum < 10 ? '0' : '') + todayNum.toString();
-  return `${year}-${month}-${date}`;
+const monthDaysArray = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+function addLeadingZero(num: number): string {
+  if (num >= 10) return num.toString();
+  return '0' + num.toString();
 }
 
 /**
- * Takes a color name and converts it into a string of a hex color.
- * @param color A string of a color name.
- * @returns A string of a hex code for the given color.
+ * Converts a Date object to a string.
+ * @param date A Date object.
+ * @returns A string of the date in the format 'yyyy-mm-dd'.
  */
-export function convertColor(color: string): string {
+export function dateToString(date?: Date): string {
+  if (!date) date = new Date();
+
+  const year = date.getFullYear().toString();
+  // const monthNum = date.getMonth() + 1;
+  // const monthStr = (monthNum < 10 ? '0' : '') + monthNum.toString();
+  const month = addLeadingZero(date.getMonth() + 1);
+  // const dateNum = date.getDate();
+  // const dateStr = (dateNum < 10 ? '0' : '') + dateNum.toString();
+  const dateStr = addLeadingZero(date.getDate());
+  return `${year}-${month}-${dateStr}`;
+}
+
+/**
+ * Given a date string or Date object, finds the first and last dates
+ * (Sunday and Saturday) of that week
+ * @param date A string in the format 'yyyy-mm-dd' or a Date object.
+ * @returns An array of two date strings.
+ */
+export function findWeekStartEnd(date: string | Date): string[] {
+  let currentDate: Date;
+  if (typeof date === 'string') {
+    currentDate = new Date(date);
+  } else {
+    currentDate = date;
+  }
+
+  let startYear = currentDate.getFullYear();
+  let startMonth = currentDate.getMonth() + 1;
+  let startDate = currentDate.getDate() - currentDate.getDay();
+  if (startDate < 1) {
+    startMonth--;
+    startDate = monthDaysArray[startMonth - 1] - startDate;
+
+    if (startMonth === 2) {
+      if (checkLeapYear(startYear)) startDate++;
+    } else if (startMonth < 1) {
+      startYear--;
+      startMonth = 12;
+    }
+  }
+
+  let endYear = currentDate.getFullYear();
+  let endMonth = currentDate.getMonth() + 1;
+  let endDate = currentDate.getDate() + (6 - currentDate.getDay());
+  if (endDate > monthDaysArray[endMonth - 1]) {
+    endDate = endDate - monthDaysArray[endMonth - 1];
+
+    if (endMonth === 2) {
+      if (checkLeapYear(endYear)) endDate--;
+    }
+
+    endMonth++;
+
+    if (endMonth > 12) {
+      endYear++;
+      endMonth = 1;
+    }
+  }
+
+  const startStr =
+    startYear +
+    '-' +
+    addLeadingZero(startMonth) +
+    '-' +
+    addLeadingZero(startDate);
+  const endStr = endYear + '-' + endMonth + '-' + endDate;
+  return [startStr, endStr];
+}
+
+function checkLeapYear(year: number): boolean {
+  // all years not divisible by 4 are false
+  if (year % 4 !== 0) return false;
+  // of years divisible by 4, any that are not divisible by 100 are true
+  if (year % 100 !== 0) return true;
+  // of years divisible by 100, any divisible by 400 are true
+  if (year % 400 === 0) return true;
+  // all others are false
+  return false;
+}
+
+/**
+ * Takes a color name and converts it into a string of a CSS Tailwind Class
+ * that will change the background to a hex color.
+ * @param color A string of a color name.
+ * @returns A string of a CSS Tailwind Class for background color.
+ */
+export function convertColorBg(color: string): string {
   switch (color) {
     case 'red':
-      return '#FF5A5A';
+      return ' bg-[#FF5A5A]';
     case 'orange':
-      return '#F29930';
+      return ' bg-[#F29930]';
     case 'yellow':
-      return '#F2EA30';
+      return ' bg-[#F2EA30]';
     case 'green':
-      return '#31F22D';
+      return ' bg-[#31F22D]';
     case 'blue':
-      return '#35E6F1';
+      return ' bg-[#35E6F1]';
     case 'purple':
-      return '#D289FF';
+      return ' bg-[#D289FF]';
     case 'pink':
-      return '#FF7EFA';
+      return ' bg-[#FF7EFA]';
     default:
-      return '#808080';
+      return ' bg-[#808080]';
   }
 }
 
 /**
- * Takes a color name and converts it into a string of a hex color for a
- * lighter version of the color.
+ * Takes a color name and converts it into a string of a CSS Tailwind Class
+ * that will change the border to a hex color.
+ * @param color A string of a color name.
+ * @returns A string of a CSS Tailwind Class for border color.
+ */
+export function convertColorBorder(color: string): string {
+  switch (color) {
+    case 'red':
+      return ' border-[#FF5A5A]';
+    case 'orange':
+      return ' border-[#F29930]';
+    case 'yellow':
+      return ' border-[#F2EA30]';
+    case 'green':
+      return ' border-[#31F22D]';
+    case 'blue':
+      return ' border-[#35E6F1]';
+    case 'purple':
+      return ' border-[#D289FF]';
+    case 'pink':
+      return ' border-[#FF7EFA]';
+    default:
+      return ' border-[#808080]';
+  }
+}
+
+/**
+ * Takes a color name and converts it into a string of a CSS Tailwind Class
+ * that will change the background to a hex color of a lighter version of the
+ * original color.
  * @param color A string of a color name.
  * @returns A string of a hex code for the given color.
  */
-export function convertColorLight(color: string) {
+export function convertColorLightBg(color: string) {
   switch (color) {
     case 'red':
-      return '#FFE6E6';
+      return ' bg-[#FFE6E6]';
     case 'orange':
-      return '#FDF0E0';
+      return ' bg-[#FDF0E0]';
     case 'yellow':
-      return '#FDFCE0';
+      return ' bg-[#FDFCE0]';
     case 'green':
-      return '#DAFCD9';
+      return ' bg-[#DAFCD9]';
     case 'blue':
-      return '#D9FDFF';
+      return ' bg-[#D9FDFF]';
     case 'purple':
-      return '#F8EEFF';
+      return ' bg-[#F8EEFF]';
     case 'pink':
-      return '#FFECFE';
+      return ' bg-[#FFECFE]';
   }
 }
 
