@@ -153,7 +153,7 @@ app.get('/api/marks/:date', authMiddleware, async (req, res, next) => {
 });
 
 // gets a list of all the markers for a given week belonging to the current user
-app.get('/api/marks/week', authMiddleware, async (req, res, next) => {
+app.post('/api/marks/week', authMiddleware, async (req, res, next) => {
   try {
     const { start, end } = req.body;
     const sql = `

@@ -287,6 +287,22 @@ export async function readDateMarks(date: string): Promise<Mark[]> {
   return marks;
 }
 
+export async function readWeekMarks(date: string): Promise<Mark[]> {
+  const [start, end] = findWeekStartEnd(date);
+  const req = {
+    body: JSON.stringify({ start, end }),
+    headers: {
+      'content-type': 'application/json',
+      Authorization: ('Bearer ' + readToken()) as string,
+    },
+    method: 'post',
+  };
+  const res = await fetch('/api/marks/week', req);
+  if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
+  const marks = (await res.json()) as Mark[];
+  return marks;
+}
+
 // export type UnsavedTodo = {
 //   task: string;
 //   isCompleted: boolean;

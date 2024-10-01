@@ -9,9 +9,10 @@ type Props = {
   mark: boolean;
 };
 export function ListCalendar({ calendarId, name, color, mark }: Props) {
-  const calDivStyle = `rounded-[15px] flex justify-between items-center
-    py-[5px] px-[10px] min-h-[75px] cursor-pointer
-    bg-[${convertColorLightBg(color)}]`;
+  let calDivStyle = `rounded-[15px] flex justify-between items-center
+    py-[5px] px-[10px] min-h-[75px] cursor-pointer`;
+
+  calDivStyle += convertColorLightBg(color);
 
   return (
     <Link to={`/calendar/${calendarId}`}>

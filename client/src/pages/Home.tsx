@@ -6,10 +6,11 @@ import {
   dateToString,
   Mark,
   readCalendars,
-  readDateMarks,
+  readWeekMarks,
   signIn,
 } from '../lib';
 import { ListCalendar } from '../components/ListCalendar';
+import { TestComponent } from '../components/TestComponent';
 
 export function Home() {
   const { user, handleSignIn } = useUser();
@@ -32,7 +33,7 @@ export function Home() {
       try {
         if (!user) return;
         setCalendars(await readCalendars());
-        setMarks(await readDateMarks(dateToString()));
+        setMarks(await readWeekMarks(dateToString()));
       } catch (err) {
         console.error(err);
         setError(err);
@@ -45,7 +46,10 @@ export function Home() {
   useEffect(() => {
     const listCalendarArray: JSX.Element[] = [];
     calendars.forEach((c, i) => {
-      const dayMark = marks.find((mark) => mark.calendarId === c.calendarId);
+      const dayMark = marks.find(
+        (mark) =>
+          mark.calendarId === c.calendarId && mark.date === dateToString()
+      );
       const dayMarkIsComplete = dayMark ? dayMark.isCompleted : false;
       listCalendarArray.push(
         <ListCalendar
@@ -94,6 +98,7 @@ export function Home() {
 
   return (
     <div className="px-[15px] big:px-[50px]">
+      <TestComponent />
       {!user && (
         <div className="mt-[30vh] flex justify-center">
           <div className="flex flex-col items-center">
