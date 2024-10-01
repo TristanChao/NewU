@@ -9,13 +9,21 @@ export function SignIn() {
   const [usernameText, setUsernameText] = useState<string>();
   const [passText, setPassText] = useState<string>();
   const [isLoading, setIsLoading] = useState(false);
+  const [isPassShown, setIsPassShown] = useState(false);
   const navigate = useNavigate();
   const { handleSignIn } = useUser();
 
   const inputStyle = 'border border-gray-400 rounded px-[5px] py-[3px]';
 
+  // conditionally sets button color based on loading status
+  // a visual indicator for the user that something is processing
   const buttonColor = isLoading ? '#DADADA' : '#D9FDFF';
 
+  /**
+   * Upon form submission, takes the form values and makes a fetch request.
+   * The request will query for an existing user matching the
+   * inputted credentials.
+   */
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     try {
       event.preventDefault();
@@ -62,8 +70,18 @@ export function SignIn() {
             value={passText ? passText : ''}
             onChange={(e) => setPassText(e.target.value)}
             className={inputStyle}
-            type="password"
+            type={isPassShown ? 'text' : 'password'}
           />
+          <div>
+            <label>
+              <input
+                onClick={() => setIsPassShown(!isPassShown)}
+                type="checkbox"
+                className="mr-[5px]"
+              />
+              Show Password
+            </label>
+          </div>
           <div className="flex justify-between pt-2">
             <Link to="/" className="flex justify-center items-center">
               <FaChevronLeft />

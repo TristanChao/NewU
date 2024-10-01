@@ -12,13 +12,14 @@ export function WeekCalendar({ color }: Props) {
 
   calendarStyle += convertColorLightBg(color);
 
+  // creates a set of habit marks representing the week
   useEffect(() => {
     const dayArray = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
-    const dayMarkerArray = dayArray.map((day, i): JSX.Element => {
+    const dayMarkerArray = dayArray.map((_day, i): JSX.Element => {
       return (
         <div key={i}>
-          <h1 className="text-center text-[24px]">{day}</h1>
+          {/* <h1 className="text-center text-[24px]">{day}</h1> */}
           <HabitMarker color={color} mark={true} />
         </div>
       );

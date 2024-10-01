@@ -23,11 +23,7 @@ export function dateToString(date?: Date): string {
   if (!date) date = new Date();
 
   const year = date.getFullYear().toString();
-  // const monthNum = date.getMonth() + 1;
-  // const monthStr = (monthNum < 10 ? '0' : '') + monthNum.toString();
   const month = addLeadingZero(date.getMonth() + 1);
-  // const dateNum = date.getDate();
-  // const dateStr = (dateNum < 10 ? '0' : '') + dateNum.toString();
   const dateStr = addLeadingZero(date.getDate());
   return `${year}-${month}-${dateStr}`;
 }
@@ -46,13 +42,19 @@ export function findWeekStartEnd(date: string | Date): string[] {
     currentDate = date;
   }
 
-  let startYear = currentDate.getFullYear();
-  let startMonth = currentDate.getMonth() + 1;
-  let startDate = currentDate.getDate() - currentDate.getDay();
+  const startStr = getStartStr(currentDate);
+  const endStr = getEndStr(currentDate);
+
+  return [startStr, endStr];
+}
+
+function getStartStr(date: Date) {
+  let startYear = date.getFullYear();
+  let startMonth = date.getMonth() + 1;
+  let startDate = date.getDate() - date.getDay();
   if (startDate < 1) {
     startMonth--;
     startDate = monthDaysArray[startMonth - 1] - startDate;
-
     if (startMonth === 2) {
       if (checkLeapYear(startYear)) startDate++;
     } else if (startMonth < 1) {
@@ -60,33 +62,33 @@ export function findWeekStartEnd(date: string | Date): string[] {
       startMonth = 12;
     }
   }
-
-  let endYear = currentDate.getFullYear();
-  let endMonth = currentDate.getMonth() + 1;
-  let endDate = currentDate.getDate() + (6 - currentDate.getDay());
-  if (endDate > monthDaysArray[endMonth - 1]) {
-    endDate = endDate - monthDaysArray[endMonth - 1];
-
-    if (endMonth === 2) {
-      if (checkLeapYear(endYear)) endDate--;
-    }
-
-    endMonth++;
-
-    if (endMonth > 12) {
-      endYear++;
-      endMonth = 1;
-    }
-  }
-
   const startStr =
     startYear +
     '-' +
     addLeadingZero(startMonth) +
     '-' +
     addLeadingZero(startDate);
-  const endStr = endYear + '-' + endMonth + '-' + endDate;
-  return [startStr, endStr];
+  return startStr;
+}
+
+function getEndStr(date: Date) {
+  let endYear = date.getFullYear();
+  let endMonth = date.getMonth() + 1;
+  let endDate = date.getDate() + (6 - date.getDay());
+  if (endDate > monthDaysArray[endMonth - 1]) {
+    endDate = endDate - monthDaysArray[endMonth - 1];
+    if (endMonth === 2) {
+      if (checkLeapYear(endYear)) endDate--;
+    }
+    endMonth++;
+    if (endMonth > 12) {
+      endYear++;
+      endMonth = 1;
+    }
+  }
+  const endStr =
+    endYear + '-' + addLeadingZero(endMonth) + '-' + addLeadingZero(endDate);
+  return endStr;
 }
 
 function checkLeapYear(year: number): boolean {

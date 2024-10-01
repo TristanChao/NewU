@@ -10,7 +10,6 @@ import {
   signIn,
 } from '../lib';
 import { ListCalendar } from '../components/ListCalendar';
-import { TestComponent } from '../components/TestComponent';
 
 export function Home() {
   const { user, handleSignIn } = useUser();
@@ -19,14 +18,19 @@ export function Home() {
   const [calendars, setCalendars] = useState<Calendar[]>([]);
   const [marks, setMarks] = useState<Mark[]>([]);
   const [calendarArray, setCalendarArray] = useState<JSX.Element[]>([]);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
+  // creates an event listener on the window for width resizing
   useEffect(() => {
-    const localAuthJson = localStorage.getItem('um.auth');
-    if (localAuthJson) {
-      const localAuth = JSON.parse(localAuthJson);
-      handleSignIn(localAuth.user, localAuth.token);
-    }
-  }, [handleSignIn]);
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup the event listener on component unmount
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     async function read() {
@@ -95,10 +99,10 @@ export function Home() {
 
   const buttonLayout =
     'py-[5px] px-[10px] rounded bg-[#B9FBFF] cursor-pointer text-xl';
+  const dayStyle = 'w-[40px] text-center';
 
   return (
     <div className="px-[15px] big:px-[50px]">
-      <TestComponent />
       {!user && (
         <div className="mt-[30vh] flex justify-center">
           <div className="flex flex-col items-center">
@@ -122,7 +126,20 @@ export function Home() {
       )}
       {user && (
         <div className="pt-[20px]">
-          <h1 className="text-[24px] mb-[10px]">My Habit Calendars</h1>
+          <div className="flex justify-between pr-[10px] mb-[10px]">
+            <h1 className="text-[24px]">My Habit Calendars</h1>
+            {windowWidth >= 700 && (
+              <div className="basis-2/5 flex justify-around text-[24px] min-w-[280px]">
+                <h1 className={dayStyle}>S</h1>
+                <h1 className={dayStyle}>M</h1>
+                <h1 className={dayStyle}>T</h1>
+                <h1 className={dayStyle}>W</h1>
+                <h1 className={dayStyle}>T</h1>
+                <h1 className={dayStyle}>F</h1>
+                <h1 className={dayStyle}>S</h1>
+              </div>
+            )}
+          </div>
           {calendarArray.length > 0 ? (
             calendarArray
           ) : (

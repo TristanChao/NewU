@@ -11,6 +11,7 @@ export function CalendarDetails() {
 
   const { calendarId } = useParams();
 
+  // queries for the calendar whose id is in the url upon mounting
   useEffect(() => {
     async function read() {
       try {
@@ -23,7 +24,6 @@ export function CalendarDetails() {
         setIsLoading(false);
       }
     }
-
     read();
   }, [calendarId]);
 
