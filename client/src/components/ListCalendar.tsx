@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { HabitMarker } from './HabitMarker';
-import { convertColorLightBg } from '../lib';
+import { convertColorLightBg, dateToString, Mark } from '../lib';
 import { useEffect, useState } from 'react';
 import { WeekCalendar } from './WeekCalendar';
 
@@ -8,9 +8,9 @@ type Props = {
   calendarId: number;
   name: string;
   color: string;
-  mark: boolean;
+  weekMarks: Mark[];
 };
-export function ListCalendar({ calendarId, name, color, mark }: Props) {
+export function ListCalendar({ calendarId, name, color, weekMarks }: Props) {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   useEffect(() => {
@@ -29,16 +29,22 @@ export function ListCalendar({ calendarId, name, color, mark }: Props) {
 
   calDivStyle += convertColorLightBg(color);
 
+  const currentDate = dateToString();
+  const todaysMark = weekMarks.find((mark) => (mark.date = currentDate));
+
   return (
     <Link to={`/calendar/${calendarId}`}>
       <div className={calDivStyle}>
         <span className="text-[20px]">{name}</span>
         {windowWidth >= 700 ? (
           <div className="basis-2/5">
-            <WeekCalendar color={color} />
+            <WeekCalendar color={color} weekMarks={weekMarks} />
           </div>
         ) : (
-          <HabitMarker color={color} mark={mark} />
+          <HabitMarker
+            color={color}
+            mark={todaysMark ? todaysMark.isCompleted : false}
+          />
         )}
       </div>
     </Link>

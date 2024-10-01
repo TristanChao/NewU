@@ -1,5 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Calendar, convertColorBg, readCalendar } from '../lib';
+import {
+  Calendar,
+  convertColorBg,
+  dateToString,
+  Mark,
+  readCalendar,
+  readWeekMarks,
+} from '../lib';
 import { useParams } from 'react-router-dom';
 import { WeekGoalMarker } from '../components/WeekGoalMarker';
 import { WeekCalendar } from '../components/WeekCalendar';
@@ -8,6 +15,7 @@ export function CalendarDetails() {
   const [calendar, setCalendar] = useState<Calendar>();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<unknown>();
+  const [marks, setMarks] = useState<Mark[]>([]);
 
   const { calendarId } = useParams();
 
@@ -17,6 +25,7 @@ export function CalendarDetails() {
       try {
         if (!calendarId) throw new Error("shouldn't happen");
         setCalendar(await readCalendar(calendarId));
+        setMarks(await readWeekMarks(dateToString()));
       } catch (err) {
         console.error(err);
         setError(err);
@@ -63,7 +72,7 @@ export function CalendarDetails() {
           </span>
           <WeekGoalMarker color={calendar.color} mark={false} />
         </div>
-        <WeekCalendar color={calendar.color} />
+        <WeekCalendar color={calendar.color} weekMarks={marks} />
         {calendar.desc ? (
           <>
             <h3>Description</h3>

@@ -32,6 +32,7 @@ export function Home() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // queries for calendars and the current week's habit marks belonging to user
   useEffect(() => {
     async function read() {
       try {
@@ -43,31 +44,31 @@ export function Home() {
         setError(err);
       }
     }
-
     read();
   }, [user]);
 
+  // creates an array of list calendars
   useEffect(() => {
     const listCalendarArray: JSX.Element[] = [];
     calendars.forEach((c, i) => {
-      const dayMark = marks.find(
-        (mark) =>
-          mark.calendarId === c.calendarId && mark.date === dateToString()
-      );
-      const dayMarkIsComplete = dayMark ? dayMark.isCompleted : false;
+      let calMarks: Mark[] | undefined = marks.filter((mark) => {
+        mark.calendarId === c.calendarId;
+      });
+      if (!calMarks) calMarks = [];
       listCalendarArray.push(
         <ListCalendar
           key={i}
           calendarId={c.calendarId}
           name={c.name}
           color={c.color}
-          mark={dayMarkIsComplete}
+          weekMarks={calMarks}
         />
       );
     });
     setCalendarArray(listCalendarArray);
   }, [calendars, marks]);
 
+  // automatically logs in the demo user when called
   async function onDemoClick() {
     try {
       setIsLoading(true);
@@ -103,6 +104,8 @@ export function Home() {
 
   return (
     <div className="px-[15px] big:px-[50px]">
+      {/* if a user isn't logged in, displays register, sign in, and demo
+      account buttons */}
       {!user && (
         <div className="mt-[30vh] flex justify-center">
           <div className="flex flex-col items-center">
@@ -124,6 +127,8 @@ export function Home() {
           </div>
         </div>
       )}
+      {/* if a user is logged in, displays all available calendars or a message
+      saying there are no calendars */}
       {user && (
         <div className="pt-[20px]">
           <div className="flex justify-between pr-[10px] mb-[10px]">
