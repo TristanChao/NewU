@@ -9,12 +9,17 @@ export function Register() {
   const [passText, setPassText] = useState<string>();
   const [displayNameText, setDisplayNameText] = useState<string>();
   const [isLoading, setIsLoading] = useState(false);
+  const [isPassShown, setIsPassShown] = useState(false);
   const navigate = useNavigate();
 
   const inputStyle = 'border border-gray-400 rounded px-[5px] py-[3px]';
 
   const buttonColor = isLoading ? '#DADADA' : '#D9FDFF';
 
+  /**
+   * Upon form submission, takes the form values and makes a fetch request.
+   * The request will create a new user in the database.
+   */
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     try {
       event.preventDefault();
@@ -40,27 +45,42 @@ export function Register() {
   }
 
   return (
-    <div className="px-[15px] big:px-[50px]">
+    <div className="px-[15px] big:px-[50px] max-w-[600px]">
       <h1 className="text-[24px] my-3">Register</h1>
       <form onSubmit={handleSubmit}>
         <div className="flex flex-col space-y-2">
-          <label>Username</label>
+          <label htmlFor="reg-user-input">Username</label>
           <input
             required
+            id="reg-user-input"
             value={usernameText ? usernameText : ''}
             onChange={(e) => setUsernameText(e.target.value)}
             className={inputStyle}
           />
-          <label>Password</label>
+          <label htmlFor="reg-pass-input">Password</label>
           <input
             required
+            id="reg-pass-input"
             value={passText ? passText : ''}
             onChange={(e) => setPassText(e.target.value)}
             className={inputStyle}
-            type="password"
+            type={isPassShown ? 'text' : 'password'}
           />
-          <label>Display Name &#40;optional&#41;</label>
+          <div>
+            <label>
+              <input
+                onClick={() => setIsPassShown(!isPassShown)}
+                type="checkbox"
+                className="mr-[5px]"
+              />
+              Show Password
+            </label>
+          </div>
+          <label htmlFor="reg-disp-input">
+            Display Name &#40;optional&#41;
+          </label>
           <input
+            id="reg-disp-input"
             placeholder={usernameText}
             value={displayNameText ? displayNameText : ''}
             onChange={(e) => setDisplayNameText(e.target.value)}

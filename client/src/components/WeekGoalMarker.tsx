@@ -1,18 +1,18 @@
 import { FaCheck } from 'react-icons/fa';
-import { convertColor } from '../lib';
+import { convertColorBg, convertColorBorder } from '../lib';
 
 type Props = {
   mark: boolean;
   color: string;
 };
 export function WeekGoalMarker({ mark, color }: Props) {
-  let buttonStyle = `rounded-full border-[5px] w-[50px] h-[50px] cursor-pointer
-    flex justify-center items-center border-[${convertColor(color)}]`;
+  let buttonStyle = `rounded-full border-[5px] w-[40px] h-[40px]
+    flex justify-center items-center`;
 
-  if (!mark) {
-    buttonStyle += ' big:hover:bg-[#64646420]';
-  } else {
-    buttonStyle += ` bg-[${convertColor(color)}]`;
+  buttonStyle += convertColorBorder(color);
+
+  if (mark) {
+    buttonStyle += convertColorBg(color);
   }
 
   return (

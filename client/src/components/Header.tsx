@@ -1,25 +1,29 @@
 import { TiThMenu } from 'react-icons/ti';
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { useUser } from './useUser';
 import { Popup } from './Popup';
 import { useEffect, useRef, useState } from 'react';
-import { readUser } from '../lib';
+import { readToken, readUser } from '../lib';
 
 export function Header() {
   const { user, handleSignOut, handleSignIn } = useUser();
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const menuBtnRef = useRef<HTMLButtonElement>(null);
+  const navigate = useNavigate();
 
+  // when logout is clicked, signs user out and closes menu
   function handleLogoutClick() {
     handleSignOut();
     setMenuIsOpen(false);
+    navigate('/');
   }
 
+  // effect which signs in user if their auth data is in local storage
   useEffect(() => {
-    const localAuthJson = localStorage.getItem('um.auth');
-    if (localAuthJson) {
-      const localAuth = JSON.parse(localAuthJson);
-      handleSignIn(localAuth.user, localAuth.token);
+    const localUser = readUser();
+    const localToken = readToken();
+    if (localUser && localToken) {
+      handleSignIn(localUser, localToken);
     }
   }, [handleSignIn]);
 
@@ -27,16 +31,19 @@ export function Header() {
     <>
       <div>
         <div className="p-2 px-[15px] flex justify-between big:px-[50px] min-w-[350px]">
+          {/* "NewU" link that goes to home page */}
           <Link
             to="/"
             className="text-[32px] font-bold cursor-pointer"
             style={{ fontFamily: 'Arvo, serif' }}>
             NewU
           </Link>
-          {readUser() && (
+          {/* user's display name and menu icon, showing when
+           a user is logged in */}
+          {user && (
             <div className="flex items-center">
               <h1 className="h-fit mr-[20px] text-lg inline-block">
-                {user?.displayName}
+                {user.displayName}
               </h1>
               <button
                 type="button"
@@ -49,10 +56,12 @@ export function Header() {
           )}
         </div>
         <hr className="border-[1px]" />
+        {/* page outlet */}
         <div className="min-w-[350px]">
           <Outlet />
         </div>
       </div>
+      {/* menu popup */}
       <Popup
         isOpen={menuIsOpen}
         popupAccessRef={menuBtnRef}

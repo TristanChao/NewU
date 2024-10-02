@@ -1,5 +1,5 @@
 import { FaCheck } from 'react-icons/fa';
-import { convertColor } from '../lib';
+import { convertColorBg, convertColorBorder } from '../lib';
 
 type Props = {
   mark: boolean;
@@ -8,12 +8,14 @@ type Props = {
 export function HabitMarker({ mark, color }: Props) {
   let buttonStyle = `rounded-full border-[5px]
     w-[40px] h-[40px] cursor-pointer
-    flex justify-center items-center border-[${convertColor(color)}]`;
+    flex justify-center items-center`;
+
+  buttonStyle += convertColorBorder(color);
 
   if (!mark) {
     buttonStyle += ' big:hover:bg-[#64646420]';
   } else {
-    buttonStyle += ` bg-[${convertColor(color)}]`;
+    buttonStyle += convertColorBg(color);
   }
 
   return (
