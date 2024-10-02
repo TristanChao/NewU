@@ -151,6 +151,13 @@ export function Home() {
               You don't have any calendars yet!
             </p>
           )}
+          <div className="flex justify-center mt-[15px]">
+            <Link
+              to="/calendar/form/0"
+              className="bg-[#ececec] rounded-[10px] py-[10px] w-[60%] text-center">
+              <h1 className="text-[18px]">+ Create New</h1>
+            </Link>
+          </div>
         </div>
       )}
     </div>

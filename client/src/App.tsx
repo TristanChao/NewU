@@ -10,6 +10,7 @@ import { Register } from './pages/Register.tsx';
 import { SignIn } from './pages/SignIn.tsx';
 import { CalendarDetails } from './pages/CalendarDetails.tsx';
 import { NotFound } from './pages/NotFound.tsx';
+import { CalendarForm } from './pages/CalendarForm.tsx';
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="/calendar/:calendarId" element={<CalendarDetails />} />
+          <Route path="/calendar/form/:calendarId" element={<CalendarForm />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
