@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { HabitMarker } from './HabitMarker';
-import { convertColorLightBg, Mark } from '../lib';
+import { Mark } from '../lib';
 
 type ObjDateMark = {
   objDate?: Date;
@@ -17,9 +17,7 @@ export function WeekCalendar({ color, weekMarks, calendarId }: Props) {
   const [weekCompletion, setWeekCompletion] = useState<boolean[]>([]);
   const [marks, setMarks] = useState<(Mark & ObjDateMark)[]>([]);
 
-  let calendarStyle = 'flex justify-around rounded py-[10px]';
-
-  calendarStyle += convertColorLightBg(color);
+  const calendarStyle = 'flex justify-around rounded';
 
   useEffect(() => {
     const marksArr: (Mark & ObjDateMark)[] = structuredClone(weekMarks).filter(

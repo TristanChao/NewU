@@ -7,8 +7,6 @@ type Auth = {
   token: string;
 };
 
-const monthDaysArray = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-
 function addLeadingZero(num: number): string {
   if (num >= 10) return num.toString();
   return '0' + num.toString();
@@ -28,6 +26,19 @@ export function dateToString(date?: Date): string {
   return `${year}-${month}-${dateStr}`;
 }
 
+export function prettifyDate(date: Date | string): string {
+  let newDate: Date;
+
+  if (typeof date === 'string') {
+    newDate = new Date(date);
+  } else {
+    newDate = new Date(date);
+  }
+
+  const newDateArr = newDate.toString().split(' ');
+  return `${newDateArr[1]} ${newDateArr[2]}`;
+}
+
 /**
  * Given a date string or Date object, finds the first and last dates
  * (Sunday and Saturday) of that week
@@ -42,64 +53,15 @@ export function findWeekStartEnd(date: string | Date): string[] {
     currentDate = date;
   }
 
-  const startStr = getStartStr(currentDate);
-  const endStr = getEndStr(currentDate);
+  const startDate = structuredClone(currentDate);
+  startDate.setDate(startDate.getDate() - startDate.getDay());
+  const startStr = dateToString(startDate);
+
+  const endDate = structuredClone(currentDate);
+  endDate.setDate(endDate.getDate() + (6 - endDate.getDay()));
+  const endStr = dateToString(endDate);
 
   return [startStr, endStr];
-}
-
-function getStartStr(date: Date) {
-  let startYear = date.getFullYear();
-  let startMonth = date.getMonth() + 1;
-  let startDate = date.getDate() - date.getDay();
-  if (startDate < 1) {
-    startMonth--;
-    startDate = monthDaysArray[startMonth - 1] + startDate;
-    if (startMonth === 2) {
-      if (checkLeapYear(startYear)) startDate++;
-    } else if (startMonth < 1) {
-      startYear--;
-      startMonth = 12;
-    }
-  }
-  const startStr =
-    startYear +
-    '-' +
-    addLeadingZero(startMonth) +
-    '-' +
-    addLeadingZero(startDate);
-  return startStr;
-}
-
-function getEndStr(date: Date) {
-  let endYear = date.getFullYear();
-  let endMonth = date.getMonth() + 1;
-  let endDate = date.getDate() + (6 - date.getDay());
-  if (endDate > monthDaysArray[endMonth - 1]) {
-    endDate = endDate - monthDaysArray[endMonth - 1];
-    if (endMonth === 2) {
-      if (checkLeapYear(endYear)) endDate--;
-    }
-    endMonth++;
-    if (endMonth > 12) {
-      endYear++;
-      endMonth = 1;
-    }
-  }
-  const endStr =
-    endYear + '-' + addLeadingZero(endMonth) + '-' + addLeadingZero(endDate);
-  return endStr;
-}
-
-function checkLeapYear(year: number): boolean {
-  // all years not divisible by 4 are false
-  if (year % 4 !== 0) return false;
-  // of years divisible by 4, any that are not divisible by 100 are true
-  if (year % 100 !== 0) return true;
-  // of years divisible by 100, any divisible by 400 are true
-  if (year % 400 === 0) return true;
-  // all others are false
-  return false;
 }
 
 /**
