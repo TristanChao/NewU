@@ -2,13 +2,14 @@ import { useEffect, useState } from 'react';
 import { HabitMarker } from './HabitMarker';
 import { convertColorLightBg, Mark } from '../lib';
 
-type objDateMark = {
+type ObjDateMark = {
   objDate?: Date;
+  day?: number;
 };
 
 type Props = {
   color: string;
-  weekMarks: (Mark & objDateMark)[];
+  weekMarks: Mark[];
 };
 export function WeekCalendar({ color, weekMarks }: Props) {
   const [days, setDays] = useState<JSX.Element[]>([]);
@@ -21,27 +22,30 @@ export function WeekCalendar({ color, weekMarks }: Props) {
   useEffect(() => {
     let completionArr: boolean[] = [];
 
-    function callbackFnc(this: number, mark: Mark & objDateMark) {
-      mark.objDate?.getDay() === this;
-    }
+    console.log(weekMarks);
 
-    if (!weekMarks) {
+    if (weekMarks === undefined) {
       completionArr = [false, false, false, false, false, false, false];
       console.log('weekMarks is undefined');
     } else {
-      weekMarks.forEach((mark) => {
-        mark.objDate = new Date(mark.date);
-      });
+      const marksArr: (Mark & ObjDateMark)[] = structuredClone(weekMarks);
+      marksArr.forEach(
+        (mark) => (mark.day = new Date(mark.date + 'T00:00:00').getDay())
+      );
 
       for (let i = 0; i < 7; i++) {
-        const currentMark = weekMarks.find(callbackFnc, i);
+        const currentMark = marksArr.find((mark) => mark.day === i);
         if (currentMark === undefined) {
           completionArr.push(false);
         } else {
           completionArr.push(currentMark.isCompleted);
         }
       }
+
+      console.log({ marksArr });
     }
+
+    console.log({ completionArr });
 
     setWeekCompletion(completionArr);
   }, [weekMarks]);

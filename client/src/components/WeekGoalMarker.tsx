@@ -6,14 +6,12 @@ type Props = {
   color: string;
 };
 export function WeekGoalMarker({ mark, color }: Props) {
-  let buttonStyle = `rounded-full border-[5px] w-[40px] h-[40px] cursor-pointer
+  let buttonStyle = `rounded-full border-[5px] w-[40px] h-[40px]
     flex justify-center items-center`;
 
   buttonStyle += convertColorBorder(color);
 
-  if (!mark) {
-    buttonStyle += ' big:hover:bg-[#64646420]';
-  } else {
+  if (mark) {
     buttonStyle += convertColorBg(color);
   }
 

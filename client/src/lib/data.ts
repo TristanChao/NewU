@@ -54,7 +54,7 @@ function getStartStr(date: Date) {
   let startDate = date.getDate() - date.getDay();
   if (startDate < 1) {
     startMonth--;
-    startDate = monthDaysArray[startMonth - 1] - startDate;
+    startDate = monthDaysArray[startMonth - 1] + startDate;
     if (startMonth === 2) {
       if (checkLeapYear(startYear)) startDate++;
     } else if (startMonth < 1) {
