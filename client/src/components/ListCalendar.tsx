@@ -30,7 +30,7 @@ export function ListCalendar({ calendarId, name, color, weekMarks }: Props) {
   calDivStyle += convertColorLightBg(color);
 
   const currentDate = dateToString();
-  const todaysMark = weekMarks.find((mark) => (mark.date = currentDate));
+  const todaysMark = weekMarks.find((mark) => mark.date === currentDate);
 
   return (
     <Link to={`/calendar/${calendarId}`}>
@@ -38,7 +38,11 @@ export function ListCalendar({ calendarId, name, color, weekMarks }: Props) {
         <span className="text-[20px]">{name}</span>
         {windowWidth >= 700 ? (
           <div className="basis-2/5">
-            <WeekCalendar color={color} weekMarks={weekMarks} />
+            <WeekCalendar
+              color={color}
+              weekMarks={weekMarks}
+              calendarId={calendarId}
+            />
           </div>
         ) : (
           <HabitMarker

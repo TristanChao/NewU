@@ -169,21 +169,28 @@ app.post('/api/marks/week', authMiddleware, async (req, res, next) => {
   }
 });
 
-app.get('/api/marks/:calendarId', authMiddleware, async (req, res, next) => {
-  try {
-    const { calendarId } = req.params;
-    const sql = `
+app.get(
+  '/api/marks/week/:calendarId',
+  authMiddleware,
+  async (req, res, next) => {
+    try {
+      const { calendarId } = req.params;
+      const { start, end } = req.body;
+      const sql = `
       select *
       from "habitMarks"
-      where "calendarId" = $1
-        and "ownerId" = $2;
+      where "date" >= $1 and "date" <= $2
+        and "calendarId" = $3
+        and "ownerId" = $4;
     `;
-    const result = await db.query(sql, [calendarId, req.user?.userId]);
-    res.json(result.rows);
-  } catch (err) {
-    next(err);
+      const params = [start, end, Number(calendarId), req.user?.userId];
+      const result = await db.query(sql, params);
+      res.json(result.rows);
+    } catch (err) {
+      next(err);
+    }
   }
-});
+);
 
 /*
  * Handles paths that aren't handled by any other route handler.

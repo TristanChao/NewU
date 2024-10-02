@@ -10,45 +10,45 @@ type ObjDateMark = {
 type Props = {
   color: string;
   weekMarks: Mark[];
+  calendarId: number;
 };
-export function WeekCalendar({ color, weekMarks }: Props) {
+export function WeekCalendar({ color, weekMarks, calendarId }: Props) {
   const [days, setDays] = useState<JSX.Element[]>([]);
   const [weekCompletion, setWeekCompletion] = useState<boolean[]>([]);
+  const [marks, setMarks] = useState<(Mark & ObjDateMark)[]>([]);
 
   let calendarStyle = 'flex justify-around rounded py-[10px]';
 
   calendarStyle += convertColorLightBg(color);
 
   useEffect(() => {
+    const marksArr: (Mark & ObjDateMark)[] = structuredClone(weekMarks).filter(
+      (mark) => mark.calendarId === calendarId
+    );
+    marksArr.forEach(
+      (mark) => (mark.day = new Date(mark.date + 'T00:00:00').getDay())
+    );
+    setMarks(marksArr);
+  }, [weekMarks, calendarId]);
+
+  useEffect(() => {
     let completionArr: boolean[] = [];
 
-    console.log(weekMarks);
-
-    if (weekMarks === undefined) {
+    if (marks.length === 0) {
       completionArr = [false, false, false, false, false, false, false];
-      console.log('weekMarks is undefined');
     } else {
-      const marksArr: (Mark & ObjDateMark)[] = structuredClone(weekMarks);
-      marksArr.forEach(
-        (mark) => (mark.day = new Date(mark.date + 'T00:00:00').getDay())
-      );
-
       for (let i = 0; i < 7; i++) {
-        const currentMark = marksArr.find((mark) => mark.day === i);
+        const currentMark = marks.find((mark) => mark.day === i);
         if (currentMark === undefined) {
           completionArr.push(false);
         } else {
           completionArr.push(currentMark.isCompleted);
         }
       }
-
-      console.log({ marksArr });
     }
 
-    console.log({ completionArr });
-
     setWeekCompletion(completionArr);
-  }, [weekMarks]);
+  }, [marks]);
 
   // creates a set of habit marks representing the week
   useEffect(() => {

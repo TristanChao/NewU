@@ -51,10 +51,9 @@ export function Home() {
   useEffect(() => {
     const listCalendarArray: JSX.Element[] = [];
     calendars.forEach((c, i) => {
-      let calMarks: Mark[] | undefined = marks.filter((mark) => {
-        mark.calendarId === c.calendarId;
-      });
-      if (!calMarks) calMarks = [];
+      const calMarks: Mark[] = marks.filter(
+        (mark) => mark.calendarId === c.calendarId
+      );
       listCalendarArray.push(
         <ListCalendar
           key={i}
@@ -105,7 +104,7 @@ export function Home() {
   return (
     <div className="px-[15px] big:px-[50px]">
       {/* if a user isn't logged in, displays register, sign in, and demo
-      account buttons */}
+        account buttons */}
       {!user && (
         <div className="mt-[30vh] flex justify-center">
           <div className="flex flex-col items-center">
@@ -128,7 +127,7 @@ export function Home() {
         </div>
       )}
       {/* if a user is logged in, displays all available calendars or a message
-      saying there are no calendars */}
+        saying there are no calendars */}
       {user && (
         <div className="pt-[20px]">
           <div className="flex justify-between pr-[10px] mb-[10px]">

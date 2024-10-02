@@ -23,7 +23,7 @@ export function CalendarDetails() {
   useEffect(() => {
     async function read() {
       try {
-        if (!calendarId) throw new Error("shouldn't happen");
+        if (calendarId === undefined) throw new Error("shouldn't happen");
         setCalendar(await readCalendar(calendarId));
         setMarks(await readWeekMarks(dateToString()));
       } catch (err) {
@@ -37,12 +37,12 @@ export function CalendarDetails() {
   }, [calendarId]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div className="px-[15px] big:px-[50px]">Loading...</div>;
   }
 
   if (error) {
     return (
-      <div>
+      <div className="px-[15px] big:px-[50px]">
         Error! {error instanceof Error ? error.message : 'Unknown error'}
       </div>
     );
@@ -56,6 +56,8 @@ export function CalendarDetails() {
     flex items-center justify-between`;
 
   headerDivStyle += convertColorBg(calendar.color);
+
+  if (calendarId === undefined) throw new Error("shouldn't happen");
 
   return (
     <>
@@ -72,7 +74,11 @@ export function CalendarDetails() {
           </span>
           <WeekGoalMarker color={calendar.color} mark={false} />
         </div>
-        <WeekCalendar color={calendar.color} weekMarks={marks} />
+        <WeekCalendar
+          color={calendar.color}
+          weekMarks={marks}
+          calendarId={+calendarId}
+        />
         {calendar.desc ? (
           <>
             <h3>Description</h3>
