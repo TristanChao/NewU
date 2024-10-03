@@ -10,7 +10,7 @@ type Props = {
 export function HabitMarker({ mark, color, day, onUpdate }: Props) {
   let buttonStyle = `rounded-full border-[5px]
     w-[40px] h-[40px] cursor-pointer
-    flex justify-center items-center`;
+    flex justify-center items-center pointer-events-all`;
 
   buttonStyle += convertColorBorder(color);
 

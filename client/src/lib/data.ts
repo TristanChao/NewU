@@ -354,7 +354,7 @@ export async function updateMark({
       'content-type': 'application/json',
       Authorization: ('Bearer ' + readToken()) as string,
     },
-    method: 'post',
+    method: 'put',
   };
   const res = await fetch(`/api/mark/${markId}`, req);
   if (!res.ok) throw new Error(`fetch Error: ${res.status}`);

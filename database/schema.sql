@@ -39,8 +39,7 @@ CREATE TABLE "habitMarks" (
   "ownerId"     integer         not null,
   "date"        text            not null,
   "isCompleted" boolean         not null,
-  "createdAt"   timestamptz(6)  not null default now(),
-  unique("date")
+  "createdAt"   timestamptz(6)  not null default now()
 );
 
 ALTER TABLE "calendars" ADD FOREIGN KEY ("ownerId") REFERENCES "users" ("userId");

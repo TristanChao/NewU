@@ -30,7 +30,11 @@ export function CalendarDetails() {
       try {
         if (calendarId === undefined) throw new Error("shouldn't happen");
         setCalendar(await readCalendar(calendarId));
-        setMarks(await readWeekMarks(dateToString(date)));
+        const allWeekMarks = await readWeekMarks(dateToString(date));
+        const calWeekMarks = allWeekMarks.filter(
+          (mark) => mark.calendarId === +calendarId
+        );
+        setMarks([...calWeekMarks]);
       } catch (err) {
         console.error(err);
         setError(err);
@@ -40,6 +44,10 @@ export function CalendarDetails() {
     }
     read();
   }, [calendarId, date]);
+
+  useEffect(() => {
+    console.log(marks);
+  }, [marks]);
 
   function handleWeekBack() {
     const newDate = new Date(date);
@@ -132,6 +140,7 @@ export function CalendarDetails() {
             color={calendar.color}
             weekMarks={marks}
             calendarId={+calendarId}
+            weekStart={findWeekStartEnd(date)[0] + 'T00:00'}
           />
         </div>
         {calendar.desc ? (
