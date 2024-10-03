@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { HabitMarker } from './HabitMarker';
 import { createMark, dateToString, Mark, updateMark } from '../lib';
+import { BiLoaderCircle } from 'react-icons/bi';
 
 type DayMark = {
   day?: number;
@@ -98,6 +99,16 @@ export function WeekCalendar({
     } finally {
       setIsLoading(false);
     }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center">
+        <div className="flex justify-center items-center animate-spin-slow mr-[5px] text-[20px] h-[40px]">
+          <BiLoaderCircle />
+        </div>
+      </div>
+    );
   }
 
   if (!isLoading) {

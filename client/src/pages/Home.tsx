@@ -127,7 +127,7 @@ export function Home() {
         <div className="pt-[20px]">
           <div className="flex justify-between pr-[10px] mb-[10px]">
             <h1 className="text-[24px]">My Habit Calendars</h1>
-            <div className="hidden med:block basis-2/5 flex justify-around text-[24px] min-w-[280px]">
+            <div className="hidden med:flex basis-2/5 justify-around text-[24px] min-w-[280px]">
               <h1 className={dayStyle}>S</h1>
               <h1 className={dayStyle}>M</h1>
               <h1 className={dayStyle}>T</h1>

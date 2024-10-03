@@ -14,10 +14,12 @@ import { useParams } from 'react-router-dom';
 import { WeekGoalMarker } from '../components/WeekGoalMarker';
 import { WeekCalendar } from '../components/WeekCalendar';
 import { FaChevronCircleLeft, FaChevronCircleRight } from 'react-icons/fa';
+import { BiLoaderCircle } from 'react-icons/bi';
 
 export function CalendarDetails() {
   const [calendar, setCalendar] = useState<Calendar>();
   const [isLoading, setIsLoading] = useState(true);
+  const [calIsLoading, setCalIsLoading] = useState(false);
   const [error, setError] = useState<unknown>();
   const [marks, setMarks] = useState<Mark[]>([]);
   const [date, setDate] = useState<Date>(new Date());
@@ -28,6 +30,7 @@ export function CalendarDetails() {
   useEffect(() => {
     async function read() {
       try {
+        setCalIsLoading(true);
         if (calendarId === undefined) throw new Error("shouldn't happen");
         setCalendar(await readCalendar(calendarId));
         const allWeekMarks = await readWeekMarks(dateToString(date));
@@ -40,6 +43,7 @@ export function CalendarDetails() {
         setError(err);
       } finally {
         setIsLoading(false);
+        setCalIsLoading(false);
       }
     }
     read();
@@ -127,21 +131,31 @@ export function CalendarDetails() {
           <WeekGoalMarker color={calendar.color} mark={false} />
         </div>
         <div className={markCalStyle}>
-          <div className="basis-2/5 flex justify-around text-[24px] min-w-[280px] mb-[10px]">
-            <h1 className={dayStyle}>S</h1>
-            <h1 className={dayStyle}>M</h1>
-            <h1 className={dayStyle}>T</h1>
-            <h1 className={dayStyle}>W</h1>
-            <h1 className={dayStyle}>T</h1>
-            <h1 className={dayStyle}>F</h1>
-            <h1 className={dayStyle}>S</h1>
-          </div>
-          <WeekCalendar
-            color={calendar.color}
-            weekMarks={marks}
-            calendarId={+calendarId}
-            weekStart={findWeekStartEnd(date)[0] + 'T00:00'}
-          />
+          {calIsLoading ? (
+            <div className="h-[86px] flex justify-center items-center">
+              <div className="animate-spin-slow text-[20px]">
+                <BiLoaderCircle />
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="basis-2/5 flex justify-around text-[24px] min-w-[280px] mb-[10px]">
+                <h1 className={dayStyle}>S</h1>
+                <h1 className={dayStyle}>M</h1>
+                <h1 className={dayStyle}>T</h1>
+                <h1 className={dayStyle}>W</h1>
+                <h1 className={dayStyle}>T</h1>
+                <h1 className={dayStyle}>F</h1>
+                <h1 className={dayStyle}>S</h1>
+              </div>
+              <WeekCalendar
+                color={calendar.color}
+                weekMarks={marks}
+                calendarId={+calendarId}
+                weekStart={findWeekStartEnd(date)[0] + 'T00:00'}
+              />
+            </>
+          )}
         </div>
         {calendar.desc ? (
           <>
