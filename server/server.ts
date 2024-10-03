@@ -210,6 +210,47 @@ app.post('/api/calendar', authMiddleware, async (req, res, next) => {
   }
 });
 
+app.post('/api/mark/', authMiddleware, async (req, res, next) => {
+  try {
+    const { calendarId, date, isCompleted } = req.body;
+    const sql = `
+      insert into "habitMarks" ("calendarId", "ownerId", "date", "isCompleted")
+      values ($1, $2, $3, $4)
+      returning *;
+    `;
+    const params = [calendarId, req.user?.userId, date, isCompleted];
+    const result = await db.query(sql, params);
+    const newMark = result.rows[0];
+    if (!newMark) throw new ClientError(400, 'Error creating mark');
+    res.json(newMark);
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.put('/api/mark/:markId', authMiddleware, async (req, res, next) => {
+  try {
+    const { markId } = req.params;
+    const { isCompleted } = req.body;
+    const sql = `
+      update "habitMarks"
+      set "isCompleted" = $1
+      where "markId" = $2
+        and "ownerId" = $3
+      returning *;
+    `;
+    const params = [isCompleted, markId, req.user?.userId];
+    const result = await db.query(sql, params);
+    const updatedMark = result.rows[0];
+    if (!updatedMark) {
+      throw new ClientError(400, `Mark ${markId} does not exist`);
+    }
+    res.json(updatedMark);
+  } catch (err) {
+    next(err);
+  }
+});
+
 /*
  * Handles paths that aren't handled by any other route handler.
  * It responds with `index.html` to support page refreshes with React Router.

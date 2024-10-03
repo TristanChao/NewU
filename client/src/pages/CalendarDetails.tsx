@@ -57,12 +57,12 @@ export function CalendarDetails() {
   }
 
   if (isLoading) {
-    return <div className="px-[15px] big:px-[50px]">Loading...</div>;
+    return <div className="px-[15px] small:px-[50px]">Loading...</div>;
   }
 
   if (error) {
     return (
-      <div className="px-[15px] big:px-[50px]">
+      <div className="px-[15px] small:px-[50px]">
         Error! {error instanceof Error ? error.message : 'Unknown error'}
       </div>
     );
@@ -72,7 +72,7 @@ export function CalendarDetails() {
     return <div>Can't find this calendar :&#40;</div>;
   }
 
-  let headerDivStyle = `py-[10px] px-[15px] big:px-[50px] min-h-[60px]
+  let headerDivStyle = `py-[10px] px-[15px] small:px-[50px] min-h-[60px]
     flex items-center justify-between mb-[15px]`;
   const dayStyle = 'w-[40px] text-center';
   let markCalStyle = 'mb-[10px] rounded py-[10px]';
@@ -88,7 +88,7 @@ export function CalendarDetails() {
       <div className={headerDivStyle}>
         <h1 className="text-[24px] max-w-[90%]">{calendar.name}</h1>
       </div>
-      <div className="px-[15px] big:px-[50px]">
+      <div className="px-[15px] small:px-[50px]">
         <div className="flex items-center mb-[10px] justify-between">
           <div>
             <button type="button" className="mr-[5px]" onClick={handleWeekBack}>

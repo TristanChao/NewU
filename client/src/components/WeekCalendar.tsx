@@ -1,26 +1,33 @@
 import { useEffect, useState } from 'react';
 import { HabitMarker } from './HabitMarker';
-import { Mark } from '../lib';
+import { createMark, dateToString, Mark, updateMark } from '../lib';
 
-type ObjDateMark = {
-  objDate?: Date;
+type DayMark = {
   day?: number;
 };
 
 type Props = {
   color: string;
   weekMarks: Mark[];
+  weekStart: string;
   calendarId: number;
 };
-export function WeekCalendar({ color, weekMarks, calendarId }: Props) {
-  const [days, setDays] = useState<JSX.Element[]>([]);
+export function WeekCalendar({
+  color,
+  weekMarks,
+  weekStart,
+  calendarId,
+}: Props) {
+  // const [days, setDays] = useState<JSX.Element[]>([]);
   const [weekCompletion, setWeekCompletion] = useState<boolean[]>([]);
-  const [marks, setMarks] = useState<(Mark & ObjDateMark)[]>([]);
+  const [marks, setMarks] = useState<(Mark & DayMark)[]>([]);
 
   const calendarStyle = 'flex justify-around rounded';
 
+  weekStart = '2024-09-29T00:00:00';
+
   useEffect(() => {
-    const marksArr: (Mark & ObjDateMark)[] = structuredClone(weekMarks).filter(
+    const marksArr: (Mark & DayMark)[] = structuredClone(weekMarks).filter(
       (mark) => mark.calendarId === calendarId
     );
     marksArr.forEach(
@@ -48,19 +55,97 @@ export function WeekCalendar({ color, weekMarks, calendarId }: Props) {
     setWeekCompletion(completionArr);
   }, [marks]);
 
-  // creates a set of habit marks representing the week
-  useEffect(() => {
-    const dayMarkerArray = weekCompletion.map((isComplete, i): JSX.Element => {
-      return (
-        <div key={i}>
-          {/* <h1 className="text-center text-[24px]">{day}</h1> */}
-          <HabitMarker color={color} mark={isComplete} />
-        </div>
-      );
-    });
+  async function handleUpdateMark(
+    day: number,
+    isCompleted: boolean
+  ): Promise<void> {
+    try {
+      const marksArr = structuredClone(marks);
+      const completionArr = structuredClone(weekCompletion);
+      let result: Mark;
 
-    setDays(dayMarkerArray);
-  }, [weekCompletion, color]);
+      const markToUpdate = marks.find((mark) => mark.day === day);
+      if (markToUpdate === undefined) {
+        const date = new Date(weekStart);
+        date.setDate(date.getDate() + day);
+        result = await createMark({
+          calendarId,
+          date: dateToString(date),
+          isCompleted,
+        });
+        marksArr.splice(day, 0, result);
+      } else {
+        result = await updateMark({ markId: markToUpdate.markId, isCompleted });
+        marksArr.splice(day, 1, result);
+      }
 
-  return <div className={calendarStyle}>{days}</div>;
+      completionArr.splice(day, 1, result.isCompleted);
+
+      setMarks(marksArr);
+      setWeekCompletion(completionArr);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  // // creates a set of habit marks representing the week
+  // useEffect(() => {
+  //   const dayMarkerArray = weekCompletion.map((isCompleted, i): JSX.Element => {
+  //     return (
+  //       <div key={i}>
+  //         {/* <h1 className="text-center text-[24px]">{day}</h1> */}
+  //         <HabitMarker color={color} mark={isCompleted} day={i} onUpdate={handleUpdateMark} />
+  //       </div>
+  //     );
+  //   });
+
+  //   setDays(dayMarkerArray);
+  // }, [weekCompletion, color]);
+
+  return (
+    <div className={calendarStyle}>
+      <HabitMarker
+        color={color}
+        mark={weekCompletion[0]}
+        day={0}
+        onUpdate={handleUpdateMark}
+      />
+      <HabitMarker
+        color={color}
+        mark={weekCompletion[1]}
+        day={1}
+        onUpdate={handleUpdateMark}
+      />
+      <HabitMarker
+        color={color}
+        mark={weekCompletion[2]}
+        day={2}
+        onUpdate={handleUpdateMark}
+      />
+      <HabitMarker
+        color={color}
+        mark={weekCompletion[3]}
+        day={3}
+        onUpdate={handleUpdateMark}
+      />
+      <HabitMarker
+        color={color}
+        mark={weekCompletion[4]}
+        day={4}
+        onUpdate={handleUpdateMark}
+      />
+      <HabitMarker
+        color={color}
+        mark={weekCompletion[5]}
+        day={5}
+        onUpdate={handleUpdateMark}
+      />
+      <HabitMarker
+        color={color}
+        mark={weekCompletion[6]}
+        day={6}
+        onUpdate={handleUpdateMark}
+      />
+    </div>
+  );
 }
