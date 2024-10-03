@@ -286,6 +286,40 @@ export async function readWeekMarksCal(
   return marks;
 }
 
+type CreateCalParams = {
+  type: string;
+  name: string;
+  color: string;
+  desc?: string;
+  goal: number;
+};
+export async function createCal({
+  type,
+  name,
+  color,
+  desc,
+  goal,
+}: CreateCalParams): Promise<Calendar> {
+  const req = {
+    body: JSON.stringify({
+      type,
+      name,
+      color,
+      desc,
+      goal,
+    }),
+    headers: {
+      'content-type': 'application/json',
+      Authorization: ('Bearer ' + readToken()) as string,
+    },
+    method: 'post',
+  };
+  const res = await fetch('/api/calendar', req);
+  if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
+  const calendar = (await res.json()) as Calendar;
+  return calendar;
+}
+
 // export type UnsavedTodo = {
 //   task: string;
 //   isCompleted: boolean;

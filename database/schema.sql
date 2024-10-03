@@ -21,8 +21,8 @@ CREATE TABLE "calendars" (
   "type"        text            not null,
   "name"        text            not null,
   "color"       text            not null,
-  "desc"        text            not null,
-  "goal"        integer          not null,
+  "desc"        text            ,
+  "goal"        integer         not null,
   "createdAt"   timestamptz(6)  not null default now()
 );
 
