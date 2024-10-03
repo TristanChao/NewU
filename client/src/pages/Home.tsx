@@ -10,6 +10,7 @@ import {
   signIn,
 } from '../lib';
 import { ListCalendar } from '../components/ListCalendar';
+import { BiLoaderCircle } from 'react-icons/bi';
 
 export function Home() {
   const { user, handleSignIn } = useUser();
@@ -18,19 +19,6 @@ export function Home() {
   const [calendars, setCalendars] = useState<Calendar[]>([]);
   const [marks, setMarks] = useState<Mark[]>([]);
   const [calendarArray, setCalendarArray] = useState<JSX.Element[]>([]);
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-
-  // creates an event listener on the window for width resizing
-  useEffect(() => {
-    const handleResize = () => {
-      setWindowWidth(window.innerWidth);
-    };
-
-    window.addEventListener('resize', handleResize);
-
-    // Cleanup the event listener on component unmount
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   // queries for calendars and the current week's habit marks belonging to user
   useEffect(() => {
@@ -86,7 +74,14 @@ export function Home() {
   }
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="px-[15px] small:px-[50px] flex text-[20px]">
+        <div className="flex justify-center items-center animate-spin-slow mr-[5px]">
+          <BiLoaderCircle />
+        </div>
+        Loading...
+      </div>
+    );
   }
 
   if (error) {
@@ -102,7 +97,7 @@ export function Home() {
   const dayStyle = 'w-[40px] text-center';
 
   return (
-    <div className="px-[15px] big:px-[50px]">
+    <div className="px-[15px] small:px-[50px]">
       {/* if a user isn't logged in, displays register, sign in, and demo
         account buttons */}
       {!user && (
@@ -132,17 +127,15 @@ export function Home() {
         <div className="pt-[20px]">
           <div className="flex justify-between pr-[10px] mb-[10px]">
             <h1 className="text-[24px]">My Habit Calendars</h1>
-            {windowWidth >= 700 && (
-              <div className="basis-2/5 flex justify-around text-[24px] min-w-[280px]">
-                <h1 className={dayStyle}>S</h1>
-                <h1 className={dayStyle}>M</h1>
-                <h1 className={dayStyle}>T</h1>
-                <h1 className={dayStyle}>W</h1>
-                <h1 className={dayStyle}>T</h1>
-                <h1 className={dayStyle}>F</h1>
-                <h1 className={dayStyle}>S</h1>
-              </div>
-            )}
+            <div className="hidden med:flex basis-2/5 justify-around text-[24px] min-w-[280px]">
+              <h1 className={dayStyle}>S</h1>
+              <h1 className={dayStyle}>M</h1>
+              <h1 className={dayStyle}>T</h1>
+              <h1 className={dayStyle}>W</h1>
+              <h1 className={dayStyle}>T</h1>
+              <h1 className={dayStyle}>F</h1>
+              <h1 className={dayStyle}>S</h1>
+            </div>
           </div>
           {calendarArray.length > 0 ? (
             calendarArray

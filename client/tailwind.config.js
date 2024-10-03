@@ -2,10 +2,16 @@
 export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
-    extend: {},
+    extend: {
+      animation: {
+        'spin-slow': 'spin 2s linear infinite',
+      },
+    },
     screens: {
-      big: '425px',
+      small: '425px',
       // => @media (min-width: 425px) { ... }
+      med: '700px',
+      // => @media (min-width: 700px) { ... }
     },
   },
   plugins: [],

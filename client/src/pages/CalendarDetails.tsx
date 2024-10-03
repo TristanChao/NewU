@@ -14,10 +14,12 @@ import { useParams } from 'react-router-dom';
 import { WeekGoalMarker } from '../components/WeekGoalMarker';
 import { WeekCalendar } from '../components/WeekCalendar';
 import { FaChevronCircleLeft, FaChevronCircleRight } from 'react-icons/fa';
+import { BiLoaderCircle } from 'react-icons/bi';
 
 export function CalendarDetails() {
   const [calendar, setCalendar] = useState<Calendar>();
   const [isLoading, setIsLoading] = useState(true);
+  const [calIsLoading, setCalIsLoading] = useState(false);
   const [error, setError] = useState<unknown>();
   const [marks, setMarks] = useState<Mark[]>([]);
   const [date, setDate] = useState<Date>(new Date());
@@ -28,18 +30,28 @@ export function CalendarDetails() {
   useEffect(() => {
     async function read() {
       try {
+        setCalIsLoading(true);
         if (calendarId === undefined) throw new Error("shouldn't happen");
         setCalendar(await readCalendar(calendarId));
-        setMarks(await readWeekMarks(dateToString(date)));
+        const allWeekMarks = await readWeekMarks(dateToString(date));
+        const calWeekMarks = allWeekMarks.filter(
+          (mark) => mark.calendarId === +calendarId
+        );
+        setMarks([...calWeekMarks]);
       } catch (err) {
         console.error(err);
         setError(err);
       } finally {
         setIsLoading(false);
+        setCalIsLoading(false);
       }
     }
     read();
   }, [calendarId, date]);
+
+  useEffect(() => {
+    console.log(marks);
+  }, [marks]);
 
   function handleWeekBack() {
     const newDate = new Date(date);
@@ -57,12 +69,12 @@ export function CalendarDetails() {
   }
 
   if (isLoading) {
-    return <div className="px-[15px] big:px-[50px]">Loading...</div>;
+    return <div className="px-[15px] small:px-[50px]">Loading...</div>;
   }
 
   if (error) {
     return (
-      <div className="px-[15px] big:px-[50px]">
+      <div className="px-[15px] small:px-[50px]">
         Error! {error instanceof Error ? error.message : 'Unknown error'}
       </div>
     );
@@ -72,7 +84,7 @@ export function CalendarDetails() {
     return <div>Can't find this calendar :&#40;</div>;
   }
 
-  let headerDivStyle = `py-[10px] px-[15px] big:px-[50px] min-h-[60px]
+  let headerDivStyle = `py-[10px] px-[15px] small:px-[50px] min-h-[60px]
     flex items-center justify-between mb-[15px]`;
   const dayStyle = 'w-[40px] text-center';
   let markCalStyle = 'mb-[10px] rounded py-[10px]';
@@ -88,7 +100,7 @@ export function CalendarDetails() {
       <div className={headerDivStyle}>
         <h1 className="text-[24px] max-w-[90%]">{calendar.name}</h1>
       </div>
-      <div className="px-[15px] big:px-[50px]">
+      <div className="px-[15px] small:px-[50px]">
         <div className="flex items-center mb-[10px] justify-between">
           <div>
             <button type="button" className="mr-[5px]" onClick={handleWeekBack}>
@@ -119,20 +131,31 @@ export function CalendarDetails() {
           <WeekGoalMarker color={calendar.color} mark={false} />
         </div>
         <div className={markCalStyle}>
-          <div className="basis-2/5 flex justify-around text-[24px] min-w-[280px] mb-[10px]">
-            <h1 className={dayStyle}>S</h1>
-            <h1 className={dayStyle}>M</h1>
-            <h1 className={dayStyle}>T</h1>
-            <h1 className={dayStyle}>W</h1>
-            <h1 className={dayStyle}>T</h1>
-            <h1 className={dayStyle}>F</h1>
-            <h1 className={dayStyle}>S</h1>
-          </div>
-          <WeekCalendar
-            color={calendar.color}
-            weekMarks={marks}
-            calendarId={+calendarId}
-          />
+          {calIsLoading ? (
+            <div className="h-[86px] flex justify-center items-center">
+              <div className="animate-spin-slow text-[20px]">
+                <BiLoaderCircle />
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="basis-2/5 flex justify-around text-[24px] min-w-[280px] mb-[10px]">
+                <h1 className={dayStyle}>S</h1>
+                <h1 className={dayStyle}>M</h1>
+                <h1 className={dayStyle}>T</h1>
+                <h1 className={dayStyle}>W</h1>
+                <h1 className={dayStyle}>T</h1>
+                <h1 className={dayStyle}>F</h1>
+                <h1 className={dayStyle}>S</h1>
+              </div>
+              <WeekCalendar
+                color={calendar.color}
+                weekMarks={marks}
+                calendarId={+calendarId}
+                weekStart={findWeekStartEnd(date)[0] + 'T00:00'}
+              />
+            </>
+          )}
         </div>
         {calendar.desc ? (
           <>

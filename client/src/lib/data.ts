@@ -7,11 +7,6 @@ type Auth = {
   token: string;
 };
 
-function addLeadingZero(num: number): string {
-  if (num >= 10) return num.toString();
-  return '0' + num.toString();
-}
-
 /**
  * Converts a Date object to a string.
  * @param date A Date object.
@@ -21,19 +16,13 @@ export function dateToString(date?: Date): string {
   if (!date) date = new Date();
 
   const year = date.getFullYear().toString();
-  const month = addLeadingZero(date.getMonth() + 1);
-  const dateStr = addLeadingZero(date.getDate());
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const dateStr = date.getDate().toString().padStart(2, '0');
   return `${year}-${month}-${dateStr}`;
 }
 
 export function prettifyDate(date: Date | string): string {
-  let newDate: Date;
-
-  if (typeof date === 'string') {
-    newDate = new Date(date);
-  } else {
-    newDate = new Date(date);
-  }
+  const newDate = new Date(date);
 
   const newDateArr = newDate.toString().split(' ');
   return `${newDateArr[1]} ${newDateArr[2]}`;
@@ -237,6 +226,7 @@ export async function readCalendar(calendarId: string): Promise<Calendar> {
 }
 
 export type Mark = {
+  markId: number;
   calendarId: number;
   ownerId: number;
   date: string;
@@ -320,57 +310,54 @@ export async function createCal({
   return calendar;
 }
 
-// export type UnsavedTodo = {
-//   task: string;
-//   isCompleted: boolean;
-// };
-// export type Todo = UnsavedTodo & {
-//   todoId: number;
-// };
+type CreateMarkParams = {
+  calendarId: number;
+  date: string;
+  isCompleted: boolean;
+};
+export async function createMark({
+  calendarId,
+  date,
+  isCompleted,
+}: CreateMarkParams): Promise<Mark> {
+  const req = {
+    body: JSON.stringify({
+      calendarId,
+      date,
+      isCompleted,
+    }),
+    headers: {
+      'content-type': 'application/json',
+      Authorization: ('Bearer ' + readToken()) as string,
+    },
+    method: 'post',
+  };
+  const res = await fetch('/api/mark', req);
+  if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
+  const newMark = (await res.json()) as Mark;
+  return newMark;
+}
 
-// export async function readTodos(): Promise<Todo[]> {
-//   const res = await fetch('/api/todos', {
-//     headers: { Authorization: ('Bearer ' + readToken()) as string },
-//   });
-//   if (!res.ok) throw new Error(`fetch Error ${res.status}`);
-//   return (await res.json()) as Todo[];
-// }
-
-// export async function insertTodo(todo: UnsavedTodo): Promise<Todo> {
-//   const req = {
-//     method: 'POST',
-//     headers: {
-//       'Content-Type': 'application/json',
-//       Authorization: ('Bearer ' + readToken()) as string,
-//     },
-//     body: JSON.stringify(todo),
-//   };
-//   const res = await fetch('/api/todos', req);
-//   if (!res.ok) throw new Error(`fetch Error ${res.status}`);
-//   return (await res.json()) as Todo;
-// }
-
-// export async function updateTodo(todo: Todo): Promise<Todo> {
-//   const req = {
-//     method: 'PUT',
-//     headers: {
-//       'Content-Type': 'application/json',
-//       Authorization: ('Bearer ' + readToken()) as string,
-//     },
-//     body: JSON.stringify(todo),
-//   };
-//   const res = await fetch(`/api/todos/${todo.todoId}`, req);
-//   if (!res.ok) throw new Error(`fetch Error ${res.status}`);
-//   return (await res.json()) as Todo;
-// }
-
-// export async function removeTodo(todoId: number): Promise<void> {
-//   const req = {
-//     method: 'DELETE',
-//     headers: {
-//       Authorization: ('Bearer ' + readToken()) as string,
-//     },
-//   };
-//   const res = await fetch(`/api/todos/${todoId}`, req);
-//   if (!res.ok) throw new Error(`fetch Error ${res.status}`);
-// }
+type UpdateMarkParams = {
+  markId: number;
+  isCompleted: boolean;
+};
+export async function updateMark({
+  markId,
+  isCompleted,
+}: UpdateMarkParams): Promise<Mark> {
+  const req = {
+    body: JSON.stringify({
+      isCompleted,
+    }),
+    headers: {
+      'content-type': 'application/json',
+      Authorization: ('Bearer ' + readToken()) as string,
+    },
+    method: 'put',
+  };
+  const res = await fetch(`/api/mark/${markId}`, req);
+  if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
+  const updatedMark = (await res.json()) as Mark;
+  return updatedMark;
+}

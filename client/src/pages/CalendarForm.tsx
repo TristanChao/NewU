@@ -11,7 +11,7 @@ export function CalendarForm() {
   const [desc, setDesc] = useState<string>();
   const navigate = useNavigate();
 
-  let headerDivStyle = `py-[10px] px-[15px] big:px-[50px] min-h-[60px]
+  let headerDivStyle = `py-[10px] px-[15px] small:px-[50px] min-h-[60px]
     flex items-center justify-between mb-[15px]`;
   headerDivStyle += convertColorBg(color);
 
@@ -84,7 +84,7 @@ export function CalendarForm() {
       {/* form body */}
       <form
         onSubmit={handleSubmit}
-        className="px-[15px] big:px-[50px] flex flex-col">
+        className="px-[15px] small:px-[50px] flex flex-col">
         {/* color selectors */}
         <div className="mb-[20px]">{colorButtons}</div>
         {/* name */}
@@ -137,7 +137,7 @@ export function CalendarForm() {
           className="p-[5px] border bg-gray-100 rounded h-[200px] text-[18px]"
         />
         {/* cancel/save buttons */}
-        <div className="flex justify-between absolute left-[15px] right-[15px] bottom-[20px] big:left-[50px] big:right-[50px] big:bottom-[30px]">
+        <div className="flex justify-between absolute left-[15px] right-[15px] bottom-[20px] small:left-[50px] small:right-[50px] small:bottom-[30px]">
           <button
             type="button"
             onClick={handleCancel}

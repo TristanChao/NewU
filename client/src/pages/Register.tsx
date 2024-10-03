@@ -34,8 +34,7 @@ export function Register() {
         password: passText,
         displayName: displayNameText,
       };
-      const newUser = await signUp(body);
-      alert(`Registered ${newUser.username}`);
+      await signUp(body);
       navigate('/sign-in');
     } catch (err) {
       console.error(err);
@@ -45,7 +44,7 @@ export function Register() {
   }
 
   return (
-    <div className="px-[15px] big:px-[50px] max-w-[600px]">
+    <div className="px-[15px] small:px-[50px] max-w-[600px]">
       <h1 className="text-[24px] my-3">Register</h1>
       <form onSubmit={handleSubmit}>
         <div className="flex flex-col space-y-2">
@@ -96,7 +95,7 @@ export function Register() {
               className="w-[70px] h-[35px] rounded flex justify-center items-center"
               style={{ backgroundColor: buttonColor }}>
               {isLoading ? (
-                <div className="spin">
+                <div className="animate-spin-slow">
                   <BiLoaderCircle />
                 </div>
               ) : (
