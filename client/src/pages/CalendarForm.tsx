@@ -36,6 +36,10 @@ export function CalendarForm() {
     }
   }
 
+  function handleCancel() {
+    navigate('/');
+  }
+
   useEffect(() => {
     const colorSelectArr: JSX.Element[] = [];
     const colors = [
@@ -133,9 +137,10 @@ export function CalendarForm() {
           className="p-[5px] border bg-gray-100 rounded h-[200px] text-[18px]"
         />
         {/* cancel/save buttons */}
-        <div className="flex justify-between absolute left-[15px] right-[15px] bottom-[20px]">
+        <div className="flex justify-between absolute left-[15px] right-[15px] bottom-[20px] big:left-[50px] big:right-[50px] big:bottom-[30px]">
           <button
             type="button"
+            onClick={handleCancel}
             className="w-[110px] h-[40px] rounded bg-[#cdcdcd]">
             <h1 className="text-[18px]">CANCEL</h1>
           </button>
