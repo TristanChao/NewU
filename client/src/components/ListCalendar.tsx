@@ -7,7 +7,6 @@ import {
   Mark,
   updateMark,
 } from '../lib';
-import { useEffect, useState } from 'react';
 import { WeekCalendar } from './WeekCalendar';
 
 type Props = {
@@ -24,22 +23,11 @@ export function ListCalendar({
   weekMarks,
   weekStart,
 }: Props) {
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  // const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   if (weekStart === undefined) {
     weekStart = dateToString(new Date());
   }
-
-  useEffect(() => {
-    const handleResize = () => {
-      setWindowWidth(window.innerWidth);
-    };
-
-    window.addEventListener('resize', handleResize);
-
-    // Cleanup the event listener on component unmount
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   let calDivStyle = `rounded-[15px] flex justify-between items-center
     py-[5px] px-[10px] min-h-[75px] cursor-pointer mb-[10px]`;
@@ -74,25 +62,22 @@ export function ListCalendar({
     <Link to={`/calendar/${calendarId}`}>
       <div className={calDivStyle}>
         <span className="text-[20px]">{name}</span>
-        {windowWidth >= 700 ? (
-          <div className="hidden med:block basis-2/5">
-            <WeekCalendar
-              color={color}
-              weekMarks={weekMarks}
-              calendarId={calendarId}
-              weekStart={weekStart}
-            />
-          </div>
-        ) : (
-          <div className="block med:hidden">
-            <HabitMarker
-              color={color}
-              mark={todaysMark ? todaysMark.isCompleted : false}
-              day={new Date().getDay()}
-              onUpdate={handleUpdateSingleMark}
-            />
-          </div>
-        )}
+        <div className="hidden med:block basis-2/5">
+          <WeekCalendar
+            color={color}
+            weekMarks={weekMarks}
+            calendarId={calendarId}
+            weekStart={weekStart}
+          />
+        </div>
+        <div className="block med:hidden">
+          <HabitMarker
+            color={color}
+            mark={todaysMark ? todaysMark.isCompleted : false}
+            day={new Date().getDay()}
+            onUpdate={handleUpdateSingleMark}
+          />
+        </div>
       </div>
     </Link>
   );
