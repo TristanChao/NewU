@@ -192,6 +192,24 @@ app.get(
   }
 );
 
+app.post('/api/calendar', authMiddleware, async (req, res, next) => {
+  try {
+    const { type, name, color, desc, goal } = req.body;
+    const sql = `
+      insert into "calendars" ("ownerId", "type", "name", "color", "desc", "goal")
+      values ($1, $2, $3, $4, $5, $6)
+      returning *;
+    `;
+    const params = [req.user?.userId, type, name, color, desc, goal];
+    const result = await db.query(sql, params);
+    const newCal = result.rows[0];
+    if (!newCal) throw new ClientError(400, 'Error creating calendar');
+    res.json(newCal);
+  } catch (err) {
+    next(err);
+  }
+});
+
 /*
  * Handles paths that aren't handled by any other route handler.
  * It responds with `index.html` to support page refreshes with React Router.
