@@ -10,6 +10,7 @@ import {
   signIn,
 } from '../lib';
 import { ListCalendar } from '../components/ListCalendar';
+import { BiLoaderCircle } from 'react-icons/bi';
 
 export function Home() {
   const { user, handleSignIn } = useUser();
@@ -86,7 +87,14 @@ export function Home() {
   }
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="px-[15px] small:px-[50px] flex text-[20px]">
+        <div className="flex justify-center items-center animate-spin-slow mr-[5px]">
+          <BiLoaderCircle />
+        </div>
+        Loading...
+      </div>
+    );
   }
 
   if (error) {

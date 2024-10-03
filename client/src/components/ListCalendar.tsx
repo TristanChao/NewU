@@ -15,7 +15,7 @@ type Props = {
   name: string;
   color: string;
   weekMarks: Mark[];
-  weekStart: string;
+  weekStart?: string;
 };
 export function ListCalendar({
   calendarId,
@@ -25,6 +25,10 @@ export function ListCalendar({
   weekStart,
 }: Props) {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  if (weekStart === undefined) {
+    weekStart = dateToString(new Date());
+  }
 
   useEffect(() => {
     const handleResize = () => {
@@ -38,7 +42,7 @@ export function ListCalendar({
   }, []);
 
   let calDivStyle = `rounded-[15px] flex justify-between items-center
-    py-[5px] px-[10px] min-h-[75px] cursor-pointer`;
+    py-[5px] px-[10px] min-h-[75px] cursor-pointer mb-[10px]`;
 
   calDivStyle += convertColorLightBg(color);
 
@@ -64,19 +68,6 @@ export function ListCalendar({
     } catch (err) {
       console.error(err);
     }
-    // if (markToUpdate === undefined) {
-    //   const date = new Date(weekStart);
-    //   date.setDate(date.getDate() + day);
-    //   result = await createMark({
-    //     calendarId,
-    //     date: dateToString(date),
-    //     isCompleted,
-    //   });
-    //   marksArr.splice(day, 0, result);
-    // } else {
-    //   result = await updateMark({ markId: markToUpdate.markId, isCompleted });
-    //   marksArr.splice(day, 1, result);
-    // }
   }
 
   return (

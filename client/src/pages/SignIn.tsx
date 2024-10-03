@@ -40,7 +40,6 @@ export function SignIn() {
 
       const { user, token } = await signIn(body);
       handleSignIn(user, token);
-      alert(`Signed in ${user.username}`);
       navigate('/');
     } catch (err) {
       console.error(err);
@@ -92,7 +91,7 @@ export function SignIn() {
               className="w-[70px] h-[35px] rounded flex justify-center items-center"
               style={{ backgroundColor: buttonColor }}>
               {isLoading ? (
-                <div className="spin">
+                <div className="animate-spin-slow">
                   <BiLoaderCircle />
                 </div>
               ) : (
