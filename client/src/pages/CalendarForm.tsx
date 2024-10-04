@@ -4,11 +4,13 @@ import {
   convertColorBg,
   convertColorBorder,
   createCal,
+  deleteCal,
   readCalendar,
   updateCal,
 } from '../lib';
 import { CiCircleMinus, CiCirclePlus } from 'react-icons/ci';
 import { useNavigate, useParams } from 'react-router-dom';
+import { Modal } from '../components/Modal';
 
 export function CalendarForm() {
   const [colorButtons, setColorButtons] = useState<JSX.Element[]>([]);
@@ -16,6 +18,7 @@ export function CalendarForm() {
   const [name, setName] = useState<string>();
   const [goal, setGoal] = useState(7);
   const [desc, setDesc] = useState<string>();
+  const [deleteIsOpen, setDeleteIsOpen] = useState(false);
   const { calendarId } = useParams();
   const navigate = useNavigate();
 
@@ -81,6 +84,22 @@ export function CalendarForm() {
       navigate(`/calendar/${result.calendarId}`);
     } catch (err) {
       console.error(err);
+    }
+  }
+
+  async function handleDelete() {
+    try {
+      if (!calendarId) throw new Error("shouldn't happen");
+      const deletedCal = await deleteCal(calendarId);
+      alert(`Deleted ${deletedCal.name}`);
+      setName(undefined);
+      setGoal(0);
+      setDesc(undefined);
+      setColor('red');
+      navigate('/');
+    } catch (err) {
+      console.error(err);
+      alert('Oops, something went wrong!');
     }
   }
 
@@ -184,8 +203,18 @@ export function CalendarForm() {
           onChange={(e) => setDesc(e.target.value)}
           placeholder="What am I hoping to accomplish by starting/breaking this habit?"
           id="cal-desc-input"
-          className="p-[5px] border bg-gray-100 rounded h-[200px] text-[18px]"
+          className="p-[5px] border bg-gray-100 rounded h-[200px] text-[18px] mb-[20px]"
         />
+        {Number(calendarId) > 0 && (
+          <div className="">
+            <button
+              type="button"
+              onClick={() => setDeleteIsOpen(true)}
+              className="text-red-500 text-[18px]">
+              Delete Calendar
+            </button>
+          </div>
+        )}
         {/* cancel/save buttons */}
         <div className={buttonCtnStyle}>
           <button
@@ -199,6 +228,29 @@ export function CalendarForm() {
           </button>
         </div>
       </form>
+      <Modal isOpen={deleteIsOpen} onClose={() => setDeleteIsOpen(false)}>
+        <div className="p-10">
+          <p className="text-[20px] text-center">
+            Are you sure you want to delete this habit calendar?
+            <br />
+            WARNING: This cannot be undone!
+          </p>
+          <div className="flex justify-between mt-[40px] px-[20px]">
+            <button
+              type="button"
+              onClick={() => setDeleteIsOpen(false)}
+              className="px-4 py-2 bg-gray-300 rounded">
+              CANCEL
+            </button>
+            <button
+              type="button"
+              onClick={handleDelete}
+              className="px-4 py-2 bg-red-400 rounded">
+              DELETE
+            </button>
+          </div>
+        </div>
+      </Modal>
     </>
   );
 }

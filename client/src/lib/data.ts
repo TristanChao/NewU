@@ -283,7 +283,7 @@ export async function updateCal({
   color,
   desc,
   goal,
-}: UpdateCalParams) {
+}: UpdateCalParams): Promise<Calendar> {
   const req = {
     body: JSON.stringify({
       calendarId,
@@ -303,6 +303,19 @@ export async function updateCal({
   if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
   const calendar = (await res.json()) as Calendar;
   return calendar;
+}
+
+export async function deleteCal(calendarId: string): Promise<Calendar> {
+  const req = {
+    headers: {
+      Authorization: ('Bearer ' + readToken()) as string,
+    },
+    method: 'delete',
+  };
+  const res = await fetch(`/api/calendar/${calendarId}`, req);
+  if (!res.ok) throw new Error(`fetchError: $res.status`);
+  const deletedCal = (await res.json()) as Calendar;
+  return deletedCal;
 }
 
 // ------------------------------------------------------------------------
