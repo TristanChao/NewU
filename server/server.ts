@@ -173,17 +173,47 @@ app.put('/api/calendar/:calendarId', authMiddleware, async (req, res, next) => {
       color,
       desc,
       goal,
-      calendarId,
+      Number(calendarId),
       req.user?.userId,
     ];
     const result = await db.query(sql, params);
     const updatedCal = result.rows[0];
-    if (!updatedCal) throw new ClientError(400, 'Error updating calendar');
+    if (!updatedCal) {
+      throw new ClientError(404, `Calendar ${calendarId} not found.`);
+    }
     res.json(updatedCal);
   } catch (err) {
     next(err);
   }
 });
+
+app.delete(
+  '/api/calendar/:calendarId',
+  authMiddleware,
+  async (req, res, next) => {
+    try {
+      const { calendarId } = req.params;
+      const sql = `
+        delete
+        from "calendars"
+        where "calendarId" = $1
+          and "ownerId" = $2
+        returning *;
+      `;
+      const result = await db.query(sql, [
+        Number(calendarId),
+        req.user?.userId,
+      ]);
+      const deletedCal = result.rows[0];
+      if (!deletedCal) {
+        throw new ClientError(404, `Calendar ${calendarId} not found.`);
+      }
+      res.json(deletedCal);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
 
 // gets a list of all the markers for a specified date belonging to the current user
 app.get('/api/marks/:date', authMiddleware, async (req, res, next) => {
