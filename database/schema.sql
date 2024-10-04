@@ -38,6 +38,7 @@ CREATE TABLE "habitMarks" (
   "calendarId"  integer         not null,
   "ownerId"     integer         not null,
   "date"        text            not null,
+  "day"         integer         not null,
   "isCompleted" boolean         not null,
   "createdAt"   timestamptz(6)  not null default now()
 );

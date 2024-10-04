@@ -3,25 +3,23 @@ import { HabitMarker } from './HabitMarker';
 import { createMark, dateToString, Mark, updateMark } from '../lib';
 import { BiLoaderCircle } from 'react-icons/bi';
 
-type DayMark = {
-  day?: number;
-};
-
 type Props = {
   color: string;
   weekMarks: Mark[];
   weekStart: string;
   calendarId: number;
+  onMarkUpdate: (marks: Mark[]) => void;
 };
 export function WeekCalendar({
   color,
   weekMarks,
   weekStart,
   calendarId,
+  onMarkUpdate,
 }: Props) {
   // const [days, setDays] = useState<JSX.Element[]>([]);
   const [weekCompletion, setWeekCompletion] = useState<boolean[]>([]);
-  const [marks, setMarks] = useState<(Mark & DayMark)[]>([]);
+  const [marks, setMarks] = useState<Mark[]>([]);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -30,11 +28,8 @@ export function WeekCalendar({
   useEffect(() => {}, [weekCompletion]);
 
   useEffect(() => {
-    const marksArr: (Mark & DayMark)[] = structuredClone(
-      weekMarks.filter((mark) => mark.calendarId === calendarId)
-    );
-    marksArr.forEach(
-      (mark) => (mark.day = new Date(mark.date + 'T00:00').getDay())
+    const marksArr: Mark[] = weekMarks.filter(
+      (mark) => mark.calendarId === calendarId
     );
     setMarks(marksArr);
   }, [weekMarks, calendarId]);
@@ -67,7 +62,7 @@ export function WeekCalendar({
 
       const marksArr = [...marks];
       const completionArr = [...weekCompletion];
-      let result: Mark & DayMark;
+      let result: Mark;
 
       const markToUpdate = marks.find((mark) => mark.day === day);
       if (markToUpdate === undefined) {
@@ -78,11 +73,9 @@ export function WeekCalendar({
           date: dateToString(date),
           isCompleted,
         });
-        result.day = new Date(result.date + 'T00:00').getDay();
         marksArr.push(result);
       } else {
         result = await updateMark({ markId: markToUpdate.markId, isCompleted });
-        result.day = new Date(result.date + 'T00:00').getDay();
         marksArr.splice(
           marksArr.findIndex((mark) => mark.day === day),
           1,
@@ -94,6 +87,7 @@ export function WeekCalendar({
 
       setMarks(marksArr);
       setWeekCompletion(completionArr);
+      onMarkUpdate(marksArr);
     } catch (err) {
       console.error(err);
     } finally {
