@@ -135,6 +135,56 @@ app.get(
   }
 );
 
+app.post('/api/calendar', authMiddleware, async (req, res, next) => {
+  try {
+    const { type, name, color, desc, goal } = req.body;
+    const sql = `
+      insert into "calendars" ("ownerId", "type", "name", "color", "desc", "goal")
+      values ($1, $2, $3, $4, $5, $6)
+      returning *;
+    `;
+    const params = [req.user?.userId, type, name, color, desc, goal];
+    const result = await db.query(sql, params);
+    const newCal = result.rows[0];
+    if (!newCal) throw new ClientError(400, 'Error creating calendar');
+    res.json(newCal);
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.put('/api/calendar/:calendarId', authMiddleware, async (req, res, next) => {
+  try {
+    const { calendarId, type, name, color, desc, goal } = req.body;
+    const sql = `
+      update "calendars"
+      set "type" = $1,
+          "name" = $2,
+          "color" = $3,
+          "desc" = $4,
+          "goal" = $5
+      where "calendarId" = $6
+        and "ownerId" = $7
+      returning *;
+    `;
+    const params = [
+      type,
+      name,
+      color,
+      desc,
+      goal,
+      calendarId,
+      req.user?.userId,
+    ];
+    const result = await db.query(sql, params);
+    const updatedCal = result.rows[0];
+    if (!updatedCal) throw new ClientError(400, 'Error updating calendar');
+    res.json(updatedCal);
+  } catch (err) {
+    next(err);
+  }
+});
+
 // gets a list of all the markers for a specified date belonging to the current user
 app.get('/api/marks/:date', authMiddleware, async (req, res, next) => {
   try {
@@ -191,24 +241,6 @@ app.get(
     }
   }
 );
-
-app.post('/api/calendar', authMiddleware, async (req, res, next) => {
-  try {
-    const { type, name, color, desc, goal } = req.body;
-    const sql = `
-      insert into "calendars" ("ownerId", "type", "name", "color", "desc", "goal")
-      values ($1, $2, $3, $4, $5, $6)
-      returning *;
-    `;
-    const params = [req.user?.userId, type, name, color, desc, goal];
-    const result = await db.query(sql, params);
-    const newCal = result.rows[0];
-    if (!newCal) throw new ClientError(400, 'Error creating calendar');
-    res.json(newCal);
-  } catch (err) {
-    next(err);
-  }
-});
 
 app.post('/api/mark/', authMiddleware, async (req, res, next) => {
   try {

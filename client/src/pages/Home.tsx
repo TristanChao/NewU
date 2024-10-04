@@ -97,7 +97,7 @@ export function Home() {
   const dayStyle = 'w-[40px] text-center';
 
   return (
-    <div className="px-[15px] small:px-[50px]">
+    <div className="px-[15px] small:px-[50px] big:px-[200px]">
       {/* if a user isn't logged in, displays register, sign in, and demo
         account buttons */}
       {!user && (

@@ -10,7 +10,7 @@ values
   'Demo');
 
 insert into "calendars" ("ownerId", "type", "name", "color", "desc", "goal")
-values (1, 'normal', 'eat veggies', 'green', 'if you wanna be healthy, you gotta eat your veggies', 5);
+values (1, 'normal', 'Eat Vegetables', 'green', 'If you want to be healthy, you need to eat your veggies.', 5);
 
 insert into "calendarAccess" ("calendarId", "userId", "accessType")
 values (1, 1, 'owner');

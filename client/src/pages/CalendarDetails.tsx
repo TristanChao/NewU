@@ -10,11 +10,12 @@ import {
   readCalendar,
   readWeekMarks,
 } from '../lib';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { WeekGoalMarker } from '../components/WeekGoalMarker';
 import { WeekCalendar } from '../components/WeekCalendar';
 import { FaChevronCircleLeft, FaChevronCircleRight } from 'react-icons/fa';
 import { BiLoaderCircle } from 'react-icons/bi';
+import { RiPencilFill } from 'react-icons/ri';
 
 export function CalendarDetails() {
   const [calendar, setCalendar] = useState<Calendar>();
@@ -88,12 +89,19 @@ export function CalendarDetails() {
   }
 
   if (isLoading) {
-    return <div className="px-[15px] small:px-[50px]">Loading...</div>;
+    return (
+      <div className="px-[15px] small:px-[50px] big:px-[200px] flex text-[20px] mt-[10px]">
+        <div className="flex justify-center items-center animate-spin-slow mr-[5px]">
+          <BiLoaderCircle />
+        </div>
+        Loading...
+      </div>
+    );
   }
 
   if (error) {
     return (
-      <div className="px-[15px] small:px-[50px]">
+      <div className="px-[15px] small:px-[50px] big:px-[200px]">
         Error! {error instanceof Error ? error.message : 'Unknown error'}
       </div>
     );
@@ -103,7 +111,7 @@ export function CalendarDetails() {
     return <div>Can't find this calendar :&#40;</div>;
   }
 
-  let headerDivStyle = `py-[10px] px-[15px] small:px-[50px] min-h-[60px]
+  let headerDivStyle = `py-[10px] px-[15px] small:px-[50px] big:px-[200px] min-h-[60px]
     flex items-center justify-between mb-[15px]`;
   headerDivStyle += convertColorBg(calendar.color);
 
@@ -112,6 +120,11 @@ export function CalendarDetails() {
   let markCalStyle = 'mb-[10px] rounded py-[10px]';
   markCalStyle += convertColorLightBg(calendar.color);
 
+  const buttonCtnStyle = `flex justify-between absolute left-[15px]
+    right-[15px] bottom-[20px] small:left-[50px] small:right-[50px]
+    small:bottom-[30px] big:left-[200px] big:right-[200px]
+    small:bottom-[30px]`;
+
   if (calendarId === undefined) throw new Error("shouldn't happen");
 
   return (
@@ -119,9 +132,14 @@ export function CalendarDetails() {
       {/* calendar header */}
       <div className={headerDivStyle}>
         <h1 className="text-[24px] max-w-[90%]">{calendar.name}</h1>
+        <Link to={`/calendar/form/${calendarId}`}>
+          <div className="text-[24px] mr-[10px]">
+            <RiPencilFill />
+          </div>
+        </Link>
       </div>
       {/* calendar body */}
-      <div className="px-[15px] small:px-[50px]">
+      <div className="px-[15px] small:px-[50px] big:px-[200px]">
         {/* week label and selectors */}
         <div className="flex items-center mb-[10px] justify-between">
           <div>
@@ -150,7 +168,7 @@ export function CalendarDetails() {
         </div>
         {/* weekly goal section */}
         <div className="flex justify-between mb-[10px]">
-          <span>
+          <span className="text-[18px]">
             Your goal:
             <br />
             {calendar.goal} days a week
@@ -191,13 +209,20 @@ export function CalendarDetails() {
         </div>
         {/* description */}
         {calendar.desc ? (
-          <>
+          <div className="text-[18px]">
             <h3>Description</h3>
             <p>{calendar.desc}</p>
-          </>
+          </div>
         ) : (
           ''
         )}
+        <div className={buttonCtnStyle}>
+          <Link
+            to="/"
+            className="w-[110px] h-[40px] rounded bg-[#cdcdcd] flex justify-center items-center">
+            <h1 className="text-[18px]">Back</h1>
+          </Link>
+        </div>
       </div>
     </>
   );

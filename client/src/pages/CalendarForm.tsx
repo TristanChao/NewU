@@ -1,7 +1,14 @@
 import { useEffect, useState } from 'react';
-import { convertColorBg, convertColorBorder, createCal } from '../lib';
+import {
+  Calendar,
+  convertColorBg,
+  convertColorBorder,
+  createCal,
+  readCalendar,
+  updateCal,
+} from '../lib';
 import { CiCircleMinus, CiCirclePlus } from 'react-icons/ci';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 export function CalendarForm() {
   const [colorButtons, setColorButtons] = useState<JSX.Element[]>([]);
@@ -9,27 +16,68 @@ export function CalendarForm() {
   const [name, setName] = useState<string>();
   const [goal, setGoal] = useState(7);
   const [desc, setDesc] = useState<string>();
+  const { calendarId } = useParams();
   const navigate = useNavigate();
 
-  let headerDivStyle = `py-[10px] px-[15px] small:px-[50px] min-h-[60px]
+  useEffect(() => {
+    async function read() {
+      try {
+        if (calendarId === undefined) throw new Error("shouldn't happen");
+        const calendar = (await readCalendar(calendarId)) as Calendar;
+        if (!calendar) throw new Error('Error fetching calendar');
+        setName(calendar.name);
+        setGoal(calendar.goal);
+        setDesc(calendar.desc);
+        setColor(calendar.color);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    if (calendarId === undefined) throw new Error("shouldn't happen");
+
+    if (+calendarId > 0) {
+      read();
+    }
+  }, [calendarId]);
+
+  let headerDivStyle = `py-[10px] px-[15px] small:px-[50px] big:px-[200px] min-h-[60px]
     flex items-center justify-between mb-[15px]`;
   headerDivStyle += convertColorBg(color);
 
   let saveBtnStyle = 'w-[110px] h-[40px] rounded';
   saveBtnStyle += convertColorBg(color);
 
+  const buttonCtnStyle = `flex justify-between absolute left-[15px]
+    right-[15px] bottom-[20px] small:left-[50px] small:right-[50px]
+    small:bottom-[30px] big:left-[200px] big:right-[200px]
+    small:bottom-[30px]`;
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     try {
       event.preventDefault();
       if (!name) throw new Error('name is required');
-      const result = await createCal({
-        type: 'normal',
-        name,
-        color,
-        desc,
-        goal,
-      });
-      alert(`Created ${result.name}`);
+      let result: Calendar;
+      if (Number(calendarId) === 0) {
+        result = await createCal({
+          type: 'normal',
+          name,
+          color,
+          desc,
+          goal,
+        });
+        alert(`Created ${result.name}`);
+      } else {
+        result = await updateCal({
+          calendarId: Number(calendarId),
+          type: 'normal',
+          name,
+          color,
+          desc,
+          goal,
+        });
+        alert(`Updated ${result.name}`);
+      }
       navigate(`/calendar/${result.calendarId}`);
     } catch (err) {
       console.error(err);
@@ -78,13 +126,15 @@ export function CalendarForm() {
     <>
       {/* header */}
       <div className={headerDivStyle}>
-        <h1 className="text-[24px] max-w-[90%]">New Habit</h1>
+        <h1 className="text-[24px] max-w-[90%]">
+          {Number(calendarId) > 0 ? 'Edit Habit' : 'New Habit'}
+        </h1>
       </div>
 
       {/* form body */}
       <form
         onSubmit={handleSubmit}
-        className="px-[15px] small:px-[50px] flex flex-col">
+        className="px-[15px] small:px-[50px] big:px-[200px] flex flex-col">
         {/* color selectors */}
         <div className="mb-[20px]">{colorButtons}</div>
         {/* name */}
@@ -137,7 +187,7 @@ export function CalendarForm() {
           className="p-[5px] border bg-gray-100 rounded h-[200px] text-[18px]"
         />
         {/* cancel/save buttons */}
-        <div className="flex justify-between absolute left-[15px] right-[15px] bottom-[20px] small:left-[50px] small:right-[50px] small:bottom-[30px]">
+        <div className={buttonCtnStyle}>
           <button
             type="button"
             onClick={handleCancel}

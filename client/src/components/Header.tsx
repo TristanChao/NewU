@@ -30,7 +30,7 @@ export function Header() {
   return (
     <>
       <div>
-        <div className="p-2 px-[15px] flex justify-between small:px-[50px] min-w-[350px]">
+        <div className="p-2 px-[15px] flex justify-between small:px-[50px] big:px-[200px] min-w-[350px]">
           {/* "NewU" link that goes to home page */}
           <Link
             to="/"
