@@ -22,7 +22,8 @@ export function CalendarDetails() {
   const [calIsLoading, setCalIsLoading] = useState(false);
   const [error, setError] = useState<unknown>();
   const [marks, setMarks] = useState<Mark[]>([]);
-  const [date, setDate] = useState<Date>(new Date());
+  const [currentDate, setCurrentDate] = useState<Date>(new Date());
+  const [goalProgress, setGoalProgress] = useState(0);
 
   const { calendarId } = useParams();
 
@@ -33,7 +34,7 @@ export function CalendarDetails() {
         setCalIsLoading(true);
         if (calendarId === undefined) throw new Error("shouldn't happen");
         setCalendar(await readCalendar(calendarId));
-        const allWeekMarks = await readWeekMarks(dateToString(date));
+        const allWeekMarks = await readWeekMarks(dateToString(currentDate));
         const calWeekMarks = allWeekMarks.filter(
           (mark) => mark.calendarId === +calendarId
         );
@@ -47,25 +48,43 @@ export function CalendarDetails() {
       }
     }
     read();
-  }, [calendarId, date]);
+  }, [calendarId, currentDate]);
 
+  // checks weekly goal progress
   useEffect(() => {
-    console.log(marks);
-  }, [marks]);
+    let progress = 0;
 
+    marks.forEach((mark) => {
+      if (
+        mark.isCompleted &&
+        mark.date >= findWeekStartEnd(currentDate)[0] &&
+        mark.date <= findWeekStartEnd(currentDate)[1]
+      ) {
+        progress++;
+      }
+    });
+
+    setGoalProgress(progress);
+  }, [currentDate, marks]);
+
+  // functions to set the current focus date forward, back, or reset it to today
   function handleWeekBack() {
-    const newDate = new Date(date);
-    newDate.setDate(date.getDate() - 7);
-    setDate(newDate);
+    const newDate = new Date(currentDate);
+    newDate.setDate(currentDate.getDate() - 7);
+    setCurrentDate(newDate);
   }
   function handleWeekForward() {
-    const newDate = new Date(date);
-    newDate.setDate(date.getDate() + 7);
-    setDate(newDate);
+    const newDate = new Date(currentDate);
+    newDate.setDate(currentDate.getDate() + 7);
+    setCurrentDate(newDate);
   }
   function handleWeekReset() {
     const newDate = new Date();
-    setDate(newDate);
+    setCurrentDate(newDate);
+  }
+
+  function updateMarks(marks: Mark[]) {
+    setMarks(marks);
   }
 
   if (isLoading) {
@@ -86,35 +105,42 @@ export function CalendarDetails() {
 
   let headerDivStyle = `py-[10px] px-[15px] small:px-[50px] min-h-[60px]
     flex items-center justify-between mb-[15px]`;
-  const dayStyle = 'w-[40px] text-center';
-  let markCalStyle = 'mb-[10px] rounded py-[10px]';
-
-  markCalStyle += convertColorLightBg(calendar.color);
-
   headerDivStyle += convertColorBg(calendar.color);
+
+  const dayStyle = 'w-[40px] text-center';
+
+  let markCalStyle = 'mb-[10px] rounded py-[10px]';
+  markCalStyle += convertColorLightBg(calendar.color);
 
   if (calendarId === undefined) throw new Error("shouldn't happen");
 
   return (
     <>
+      {/* calendar header */}
       <div className={headerDivStyle}>
         <h1 className="text-[24px] max-w-[90%]">{calendar.name}</h1>
       </div>
+      {/* calendar body */}
       <div className="px-[15px] small:px-[50px]">
+        {/* week label and selectors */}
         <div className="flex items-center mb-[10px] justify-between">
           <div>
+            {/* week back button */}
             <button type="button" className="mr-[5px]" onClick={handleWeekBack}>
               <FaChevronCircleLeft />
             </button>
+            {/* week dates label */}
             <h1 className="inline-block text-[20px] mr-[5px]">
-              {prettifyDate(findWeekStartEnd(date)[0]) +
+              {prettifyDate(findWeekStartEnd(currentDate)[0]) +
                 ' to ' +
-                prettifyDate(findWeekStartEnd(date)[1])}
+                prettifyDate(findWeekStartEnd(currentDate)[1])}
             </h1>
+            {/* week forward button */}
             <button type="button" onClick={handleWeekForward}>
               <FaChevronCircleRight />
             </button>
           </div>
+          {/* set date to today button */}
           <button
             type="button"
             className="py-[5px] px-[10px] border rounded hover:bg-gray-100"
@@ -122,14 +148,19 @@ export function CalendarDetails() {
             Today
           </button>
         </div>
+        {/* weekly goal section */}
         <div className="flex justify-between mb-[10px]">
           <span>
             Your goal:
             <br />
             {calendar.goal} days a week
           </span>
-          <WeekGoalMarker color={calendar.color} mark={false} />
+          <WeekGoalMarker
+            color={calendar.color}
+            mark={goalProgress >= calendar.goal}
+          />
         </div>
+        {/* marker calendar */}
         <div className={markCalStyle}>
           {calIsLoading ? (
             <div className="h-[86px] flex justify-center items-center">
@@ -152,11 +183,13 @@ export function CalendarDetails() {
                 color={calendar.color}
                 weekMarks={marks}
                 calendarId={+calendarId}
-                weekStart={findWeekStartEnd(date)[0] + 'T00:00'}
+                weekStart={findWeekStartEnd(currentDate)[0] + 'T00:00'}
+                onMarkUpdate={updateMarks}
               />
             </>
           )}
         </div>
+        {/* description */}
         {calendar.desc ? (
           <>
             <h3>Description</h3>

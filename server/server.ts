@@ -212,13 +212,13 @@ app.post('/api/calendar', authMiddleware, async (req, res, next) => {
 
 app.post('/api/mark/', authMiddleware, async (req, res, next) => {
   try {
-    const { calendarId, date, isCompleted } = req.body;
+    const { calendarId, date, day, isCompleted } = req.body;
     const sql = `
-      insert into "habitMarks" ("calendarId", "ownerId", "date", "isCompleted")
-      values ($1, $2, $3, $4)
+      insert into "habitMarks" ("calendarId", "ownerId", "date", "day", "isCompleted")
+      values ($1, $2, $3, $4, $5)
       returning *;
     `;
-    const params = [calendarId, req.user?.userId, date, isCompleted];
+    const params = [calendarId, req.user?.userId, date, day, isCompleted];
     const result = await db.query(sql, params);
     const newMark = result.rows[0];
     if (!newMark) throw new ClientError(400, 'Error creating mark');

@@ -230,6 +230,7 @@ export type Mark = {
   calendarId: number;
   ownerId: number;
   date: string;
+  day: number;
   isCompleted: boolean;
 };
 export async function readDateMarks(date: string): Promise<Mark[]> {
@@ -324,6 +325,7 @@ export async function createMark({
     body: JSON.stringify({
       calendarId,
       date,
+      day: new Date(date + 'T00:00').getDay(),
       isCompleted,
     }),
     headers: {
