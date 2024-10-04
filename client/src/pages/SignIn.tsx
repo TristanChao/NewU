@@ -52,9 +52,9 @@ export function SignIn() {
   }
 
   return (
-    <div className="px-[15px] small:px-[50px]">
+    <div className="px-[15px] small:px-[50px] big:px-[200px] max-w-[600px] big:max-w-[1000px]">
       <h1 className="text-[24px] my-3">Sign In</h1>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="text-[18px]">
         <div className="flex flex-col space-y-2">
           <label>Username</label>
           <input

@@ -7,6 +7,23 @@ type Auth = {
   token: string;
 };
 
+export type Calendar = {
+  calendarId: number;
+  name: string;
+  desc: string;
+  color: string;
+  goal: number;
+};
+
+export type Mark = {
+  markId: number;
+  calendarId: number;
+  ownerId: number;
+  date: string;
+  day: number;
+  isCompleted: boolean;
+};
+
 /**
  * Converts a Date object to a string.
  * @param date A Date object.
@@ -199,14 +216,6 @@ export async function signIn(params: SignInParams): Promise<Auth> {
   const user = (await res.json()) as Auth;
   return user;
 }
-
-export type Calendar = {
-  calendarId: number;
-  name: string;
-  desc: string;
-  color: string;
-  goal: number;
-};
 export async function readCalendars(): Promise<Calendar[]> {
   const res = await fetch('/api/calendars', {
     headers: { Authorization: ('Bearer ' + readToken()) as string },
@@ -225,14 +234,79 @@ export async function readCalendar(calendarId: string): Promise<Calendar> {
   return calendar;
 }
 
-export type Mark = {
-  markId: number;
-  calendarId: number;
-  ownerId: number;
-  date: string;
-  day: number;
-  isCompleted: boolean;
+type CreateCalParams = {
+  type: string;
+  name: string;
+  color: string;
+  desc?: string;
+  goal: number;
 };
+export async function createCal({
+  type,
+  name,
+  color,
+  desc,
+  goal,
+}: CreateCalParams): Promise<Calendar> {
+  const req = {
+    body: JSON.stringify({
+      type,
+      name,
+      color,
+      desc,
+      goal,
+    }),
+    headers: {
+      'content-type': 'application/json',
+      Authorization: ('Bearer ' + readToken()) as string,
+    },
+    method: 'post',
+  };
+  const res = await fetch('/api/calendar', req);
+  if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
+  const calendar = (await res.json()) as Calendar;
+  return calendar;
+}
+
+type UpdateCalParams = {
+  calendarId: number;
+  type: string;
+  name: string;
+  color: string;
+  desc?: string;
+  goal: number;
+};
+export async function updateCal({
+  calendarId,
+  type,
+  name,
+  color,
+  desc,
+  goal,
+}: UpdateCalParams) {
+  const req = {
+    body: JSON.stringify({
+      calendarId,
+      type,
+      name,
+      color,
+      desc,
+      goal,
+    }),
+    headers: {
+      'content-type': 'application/json',
+      Authorization: ('Bearer ' + readToken()) as string,
+    },
+    method: 'put',
+  };
+  const res = await fetch(`/api/calendar/${calendarId}`, req);
+  if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
+  const calendar = (await res.json()) as Calendar;
+  return calendar;
+}
+
+// ------------------------------------------------------------------------
+
 export async function readDateMarks(date: string): Promise<Mark[]> {
   const res = await fetch(`/api/marks/${date}`, {
     headers: { Authorization: ('Bearer ' + readToken()) as string },
@@ -275,40 +349,6 @@ export async function readWeekMarksCal(
   if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
   const marks = (await res.json()) as Mark[];
   return marks;
-}
-
-type CreateCalParams = {
-  type: string;
-  name: string;
-  color: string;
-  desc?: string;
-  goal: number;
-};
-export async function createCal({
-  type,
-  name,
-  color,
-  desc,
-  goal,
-}: CreateCalParams): Promise<Calendar> {
-  const req = {
-    body: JSON.stringify({
-      type,
-      name,
-      color,
-      desc,
-      goal,
-    }),
-    headers: {
-      'content-type': 'application/json',
-      Authorization: ('Bearer ' + readToken()) as string,
-    },
-    method: 'post',
-  };
-  const res = await fetch('/api/calendar', req);
-  if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
-  const calendar = (await res.json()) as Calendar;
-  return calendar;
 }
 
 type CreateMarkParams = {

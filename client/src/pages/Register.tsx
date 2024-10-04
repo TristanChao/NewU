@@ -44,9 +44,9 @@ export function Register() {
   }
 
   return (
-    <div className="px-[15px] small:px-[50px] max-w-[600px]">
-      <h1 className="text-[24px] my-3">Register</h1>
-      <form onSubmit={handleSubmit}>
+    <div className="px-[15px] small:px-[50px] big:px-[200px] max-w-[700px] big:max-w-[1100px]">
+      <h1 className="text-[24px] mt-7 mb-3">Register</h1>
+      <form onSubmit={handleSubmit} className="text-[18px]">
         <div className="flex flex-col space-y-2">
           <label htmlFor="reg-user-input">Username</label>
           <input
