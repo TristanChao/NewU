@@ -49,6 +49,7 @@ export function Home() {
           name={c.name}
           color={c.color}
           weekMarks={calMarks}
+          onMarkUpdate={handleMarkUpdate}
         />
       );
     });
@@ -71,6 +72,10 @@ export function Home() {
     } finally {
       setIsLoading(false);
     }
+  }
+
+  function handleMarkUpdate(marks: Mark[]): void {
+    setMarks(marks);
   }
 
   if (isLoading) {
