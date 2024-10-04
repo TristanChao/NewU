@@ -64,7 +64,13 @@ export function WeekCalendar({
       const completionArr = [...weekCompletion];
       let result: Mark;
 
-      const markToUpdate = marks.find((mark) => mark.day === day);
+      const markToUpdateArr = marks.filter((mark) => mark.day === day);
+      let markToUpdate: Mark | undefined;
+      if (markToUpdateArr.length <= 1) {
+        markToUpdate = markToUpdateArr[0];
+      } else {
+        markToUpdate = markToUpdateArr[markToUpdateArr.length - 1];
+      }
       if (markToUpdate === undefined) {
         const date = new Date(weekStart);
         date.setDate(date.getDate() + day);
