@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Calendar,
   convertColorBg,
   convertColorLightBg,
+  createAccess,
   dateToString,
   findWeekStartEnd,
+  getUser,
   Mark,
   prettifyDate,
   readCalendar,
@@ -16,15 +18,23 @@ import { WeekCalendar } from '../components/WeekCalendar';
 import { FaChevronCircleLeft, FaChevronCircleRight } from 'react-icons/fa';
 import { BiLoaderCircle } from 'react-icons/bi';
 import { RiPencilFill } from 'react-icons/ri';
+import { IoShareSocialOutline } from 'react-icons/io5';
+import { Modal } from '../components/Modal';
+import { FaXmark } from 'react-icons/fa6';
 
 export function CalendarDetails() {
-  const [calendar, setCalendar] = useState<Calendar>();
   const [isLoading, setIsLoading] = useState(true);
   const [calIsLoading, setCalIsLoading] = useState(false);
   const [error, setError] = useState<unknown>();
+
+  const [calendar, setCalendar] = useState<Calendar>();
   const [marks, setMarks] = useState<Mark[]>([]);
+
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [goalProgress, setGoalProgress] = useState(0);
+
+  const [shareIsOpen, setShareIsOpen] = useState(false);
+  const [shareInput, setShareInput] = useState<string>();
 
   const { calendarId } = useParams();
 
@@ -88,6 +98,26 @@ export function CalendarDetails() {
     setMarks(marks);
   }
 
+  async function handleShare(event: React.FormEvent<HTMLFormElement>) {
+    try {
+      event.preventDefault();
+      if (!shareInput) throw new Error('must provide username');
+      if (!calendarId) throw new Error("shouldn't happen");
+      const shareUser = await getUser(shareInput);
+      const newAccess = await createAccess({
+        calendarId: +calendarId,
+        userId: shareUser.userId,
+        accessType: 'viewer',
+      });
+      if (!newAccess) throw new Error('calendar share was unsuccessful');
+      alert('Shared your calendar!');
+      setShareIsOpen(false);
+    } catch (err) {
+      setError(err);
+      console.error(err);
+    }
+  }
+
   if (isLoading) {
     return (
       <div className="px-[15px] small:px-[50px] big:px-[200px] flex text-[20px] mt-[10px]">
@@ -132,12 +162,53 @@ export function CalendarDetails() {
       {/* calendar header */}
       <div className={headerDivStyle}>
         <h1 className="text-[24px] max-w-[90%]">{calendar.name}</h1>
-        <Link to={`/calendar/form/${calendarId}`}>
-          <div className="text-[24px] mr-[10px]">
-            <RiPencilFill />
-          </div>
-        </Link>
+        <div className="flex px-[10px]">
+          <button
+            onClick={() => setShareIsOpen(true)}
+            className="text-[24px] mr-[20px]">
+            <IoShareSocialOutline />
+          </button>
+          <Link to={`/calendar/form/${calendarId}`}>
+            <div className="text-[24px]">
+              <RiPencilFill />
+            </div>
+          </Link>
+        </div>
       </div>
+      <Modal
+        className={'w-[85%] max-w-[800px] min-w-[295px]'}
+        isOpen={shareIsOpen}
+        onClose={() => setShareIsOpen(false)}>
+        <div className="p-8">
+          <div className="flex justify-between mb-[15px]">
+            <h1 className="text-[20px]">Share Calendar</h1>
+            <button
+              onClick={() => setShareIsOpen(false)}
+              type="button"
+              className="text-[20px]">
+              <FaXmark />
+            </button>
+          </div>
+          <form onSubmit={handleShare}>
+            <span>
+              By sharing a calendar, you can let other people view your
+              progress!
+            </span>
+            <div className="flex mt-[10px]">
+              <input
+                required
+                value={shareInput ? shareInput : ''}
+                onChange={(e) => setShareInput(e.target.value)}
+                placeholder="Add a friend by username"
+                className="border rounded p-[5px] w-full mr-[10px]"
+              />
+              <button type="submit" className="rounded bg-blue-200 px-[10px]">
+                Share
+              </button>
+            </div>
+          </form>
+        </div>
+      </Modal>
       {/* calendar body */}
       <div className="px-[15px] small:px-[50px] big:px-[200px]">
         {/* week label and selectors */}
@@ -167,7 +238,7 @@ export function CalendarDetails() {
           </button>
         </div>
         {/* weekly goal section */}
-        <div className="flex justify-between mb-[10px]">
+        <div className="flex justify-between items-center mb-[10px]">
           <span className="text-[18px]">
             Your goal:
             <br />

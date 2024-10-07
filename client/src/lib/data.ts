@@ -431,7 +431,7 @@ type CreateAccessParams = {
   accessType: string;
 };
 /**
- *
+ * Inserts a new row in the calendarAccess db table.
  * @param param An object containing calendarId, userId, and accessType
  * @returns The newly created access object.
  */
@@ -452,4 +452,16 @@ export async function createAccess({
   if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
   const newAccess = (await res.json()) as Access;
   return newAccess;
+}
+
+export async function getUser(username: string): Promise<User> {
+  const req = {
+    headers: {
+      Authorization: ('Bearer ' + readToken()) as string,
+    },
+  };
+  const res = await fetch(`/api/user/${username}`, req);
+  if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
+  const readUser = (await res.json()) as User;
+  return readUser;
 }

@@ -326,7 +326,26 @@ app.post('/api/access', authMiddleware, async (req, res, next) => {
     const newAccess = result.rows[0];
     if (!newAccess) throw new ClientError(400, 'Error giving calendar access');
     res.json(newAccess);
-  } catch (err) {}
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get('/api/user/:username', authMiddleware, async (req, res, next) => {
+  try {
+    const { username } = req.params;
+    const sql = `
+      select *
+      from "users"
+      where "username" = $1;
+    `;
+    const result = await db.query(sql, [username]);
+    const readUser = result.rows[0];
+    if (!readUser) throw new ClientError(404, `User not found`);
+    res.json(readUser);
+  } catch (err) {
+    next(err);
+  }
 });
 
 /*
