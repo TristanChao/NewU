@@ -8,7 +8,7 @@ type Props = {
   weekMarks: Mark[];
   weekStart: string;
   calendarId: number;
-  onMarkUpdate: (marks: Mark[]) => void;
+  onMarkUpdate: (marks: Mark[], calendarId: number) => void;
 };
 export function WeekCalendar({
   color,
@@ -93,7 +93,7 @@ export function WeekCalendar({
 
       setMarks(marksArr);
       setWeekCompletion(completionArr);
-      onMarkUpdate(marksArr);
+      onMarkUpdate(marksArr, calendarId);
     } catch (err) {
       console.error(err);
     } finally {
