@@ -24,6 +24,12 @@ export type Mark = {
   isCompleted: boolean;
 };
 
+export type Access = {
+  calendarId: number;
+  userId: number;
+  accessType: string;
+};
+
 /**
  * Converts a Date object to a string.
  * @param date A Date object.
@@ -415,4 +421,35 @@ export async function updateMark({
   if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
   const updatedMark = (await res.json()) as Mark;
   return updatedMark;
+}
+
+// --------------------------------------------------------------------
+
+type CreateAccessParams = {
+  calendarId: number;
+  userId: number;
+  accessType: string;
+};
+/**
+ *
+ * @param param An object containing calendarId, userId, and accessType
+ * @returns The newly created access object.
+ */
+export async function createAccess({
+  calendarId,
+  userId,
+  accessType,
+}: CreateAccessParams): Promise<Access> {
+  const req = {
+    body: JSON.stringify({ calendarId, userId, accessType }),
+    headers: {
+      'content-type': 'application/json',
+      Authorization: ('Bearer ' + readToken()) as string,
+    },
+    method: 'post',
+  };
+  const res = await fetch('/api/access', req);
+  if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
+  const newAccess = (await res.json()) as Access;
+  return newAccess;
 }

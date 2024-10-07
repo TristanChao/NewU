@@ -23,7 +23,11 @@ export function Home() {
   const handleMarkUpdate = useCallback(
     (newMarks: Mark[], calendarId: number): void => {
       setMarks([
+        // the marks that belong to calendars that weren't updated haven't
+        // changed, so I pull them from the state in the Home component
         ...marks.filter((mark) => mark.calendarId !== calendarId),
+        // the WeekCalendar component handles the fetch request and gets back
+        // all the marks for the updated calendar, and those are spread here
         ...newMarks,
       ]);
     },

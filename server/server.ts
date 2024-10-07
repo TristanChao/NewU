@@ -313,6 +313,22 @@ app.put('/api/mark/:markId', authMiddleware, async (req, res, next) => {
   }
 });
 
+app.post('/api/access', authMiddleware, async (req, res, next) => {
+  try {
+    const { calendarId, userId, accessType } = req.body;
+    const sql = `
+      insert into "calendarAccess" ("calendarId", "userId", "accessType")
+      values ($1, $2, $3)
+      returning *;
+    `;
+    const params = [calendarId, userId, accessType];
+    const result = await db.query(sql, params);
+    const newAccess = result.rows[0];
+    if (!newAccess) throw new ClientError(400, 'Error giving calendar access');
+    res.json(newAccess);
+  } catch (err) {}
+});
+
 /*
  * Handles paths that aren't handled by any other route handler.
  * It responds with `index.html` to support page refreshes with React Router.
