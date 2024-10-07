@@ -15,6 +15,7 @@ type Props = {
   color: string;
   weekMarks: Mark[];
   weekStart?: string;
+  onMarkUpdate: (marks: Mark[], calendarId: number) => void;
 };
 export function ListCalendar({
   calendarId,
@@ -22,9 +23,8 @@ export function ListCalendar({
   color,
   weekMarks,
   weekStart,
+  onMarkUpdate,
 }: Props) {
-  // const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-
   if (weekStart === undefined) {
     weekStart = dateToString(new Date());
   }
@@ -59,26 +59,27 @@ export function ListCalendar({
   }
 
   return (
-    <Link to={`/calendar/${calendarId}`}>
-      <div className={calDivStyle}>
+    <div className={calDivStyle}>
+      <Link to={`/calendar/${calendarId}`} className="med:basis-3/5 basis-4/5">
         <span className="text-[20px]">{name}</span>
-        <div className="hidden med:block basis-2/5">
-          <WeekCalendar
-            color={color}
-            weekMarks={weekMarks}
-            calendarId={calendarId}
-            weekStart={weekStart}
-          />
-        </div>
-        <div className="block med:hidden">
-          <HabitMarker
-            color={color}
-            mark={todaysMark ? todaysMark.isCompleted : false}
-            day={new Date().getDay()}
-            onUpdate={handleUpdateSingleMark}
-          />
-        </div>
+      </Link>
+      <div className="hidden med:block basis-2/5">
+        <WeekCalendar
+          color={color}
+          weekMarks={weekMarks}
+          calendarId={calendarId}
+          weekStart={weekStart}
+          onMarkUpdate={onMarkUpdate}
+        />
       </div>
-    </Link>
+      <div className="block med:hidden">
+        <HabitMarker
+          color={color}
+          mark={todaysMark ? todaysMark.isCompleted : false}
+          day={new Date().getDay()}
+          onUpdate={handleUpdateSingleMark}
+        />
+      </div>
+    </div>
   );
 }

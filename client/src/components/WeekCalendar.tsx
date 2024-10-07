@@ -8,7 +8,7 @@ type Props = {
   weekMarks: Mark[];
   weekStart: string;
   calendarId: number;
-  onMarkUpdate: (marks: Mark[]) => void;
+  onMarkUpdate: (marks: Mark[], calendarId: number) => void;
 };
 export function WeekCalendar({
   color,
@@ -64,7 +64,13 @@ export function WeekCalendar({
       const completionArr = [...weekCompletion];
       let result: Mark;
 
-      const markToUpdate = marks.find((mark) => mark.day === day);
+      const markToUpdateArr = marks.filter((mark) => mark.day === day);
+      let markToUpdate: Mark | undefined;
+      if (markToUpdateArr.length <= 1) {
+        markToUpdate = markToUpdateArr[0];
+      } else {
+        markToUpdate = markToUpdateArr[markToUpdateArr.length - 1];
+      }
       if (markToUpdate === undefined) {
         const date = new Date(weekStart);
         date.setDate(date.getDate() + day);
@@ -87,7 +93,7 @@ export function WeekCalendar({
 
       setMarks(marksArr);
       setWeekCompletion(completionArr);
-      onMarkUpdate(marksArr);
+      onMarkUpdate(marksArr, calendarId);
     } catch (err) {
       console.error(err);
     } finally {

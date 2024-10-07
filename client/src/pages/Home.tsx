@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useUser } from '../components/useUser';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   Calendar,
   dateToString,
@@ -19,6 +19,16 @@ export function Home() {
   const [calendars, setCalendars] = useState<Calendar[]>([]);
   const [marks, setMarks] = useState<Mark[]>([]);
   const [calendarArray, setCalendarArray] = useState<JSX.Element[]>([]);
+
+  const handleMarkUpdate = useCallback(
+    (newMarks: Mark[], calendarId: number): void => {
+      setMarks([
+        ...marks.filter((mark) => mark.calendarId !== calendarId),
+        ...newMarks,
+      ]);
+    },
+    [marks]
+  );
 
   // queries for calendars and the current week's habit marks belonging to user
   useEffect(() => {
@@ -49,11 +59,12 @@ export function Home() {
           name={c.name}
           color={c.color}
           weekMarks={calMarks}
+          onMarkUpdate={handleMarkUpdate}
         />
       );
     });
     setCalendarArray(listCalendarArray);
-  }, [calendars, marks]);
+  }, [calendars, marks, handleMarkUpdate]);
 
   // automatically logs in the demo user when called
   async function onDemoClick() {
