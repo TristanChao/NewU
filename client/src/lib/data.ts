@@ -335,9 +335,21 @@ export async function deleteCal(calendarId: string): Promise<Calendar> {
     method: 'delete',
   };
   const res = await fetch(`/api/calendar/${calendarId}`, req);
-  if (!res.ok) throw new Error(`fetchError: $res.status`);
+  if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
   const deletedCal = (await res.json()) as Calendar;
   return deletedCal;
+}
+
+export async function readSharedCals(): Promise<(Calendar & Access)[]> {
+  const req = {
+    headers: {
+      Authorization: ('Bearer ' + readToken()) as string,
+    },
+  };
+  const res = await fetch('/api/calendars/shared', req);
+  if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
+  const sharedCals = (await res.json()) as (Calendar & Access)[];
+  return sharedCals;
 }
 
 // ------------------------------------------------------------------------
@@ -438,6 +450,8 @@ export async function updateMark({
   const updatedMark = (await res.json()) as Mark;
   return updatedMark;
 }
+
+export async function readSharedWeekMarks() {}
 
 // --------------------------------------------------------------------
 

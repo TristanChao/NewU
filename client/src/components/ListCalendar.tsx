@@ -15,7 +15,7 @@ type Props = {
   color: string;
   weekMarks: Mark[];
   weekStart?: string;
-  onMarkUpdate: (marks: Mark[], calendarId: number) => void;
+  onMarkUpdate?: (marks: Mark[], calendarId: number) => void;
 };
 export function ListCalendar({
   calendarId,

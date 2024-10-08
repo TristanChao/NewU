@@ -231,6 +231,24 @@ app.delete(
   }
 );
 
+app.get('/api/calendars/shared', authMiddleware, async (req, res, next) => {
+  try {
+    const sql = `
+      select *
+      from "calendarAccess"
+      join "calendars" using ("calendarId")
+      where "userId" = $1
+        and "accessType" = 'viewer';
+    `;
+    const result = await db.query(sql, [req.user?.userId]);
+    res.json(result.rows);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ------------------------------------------------------------------------
+
 // gets a list of all the markers for a specified date belonging to the current user
 app.get('/api/marks/:date', authMiddleware, async (req, res, next) => {
   try {
@@ -328,6 +346,19 @@ app.put('/api/mark/:markId', authMiddleware, async (req, res, next) => {
     next(err);
   }
 });
+
+app.get('/api/marks/shared', authMiddleware, async (req, res, next) => {
+  try {
+    const sql = `
+      select *
+      from "habitMarks"
+    `;
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ------------------------------------------------------------------------
 
 app.post('/api/access', authMiddleware, async (req, res, next) => {
   try {
