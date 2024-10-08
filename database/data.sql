@@ -5,7 +5,7 @@
 
 insert into "users" ("username", "hashedPassword", "displayName")
 values
-  ('demo',
+  ('Demo',
   '$argon2id$v=19$m=65536,t=3,p=4$6ApRRXDxBqDASYMMfNswnw$82912ccYCdu9boY0Skf3FMYeJhoTzM+FZBpfOhCb94M',
   'Demo');
 

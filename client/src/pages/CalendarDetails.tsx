@@ -3,7 +3,7 @@ import {
   Calendar,
   convertColorBg,
   convertColorLightBg,
-  createAccess,
+  createInvite,
   dateToString,
   findWeekStartEnd,
   getUser,
@@ -21,22 +21,25 @@ import { RiPencilFill } from 'react-icons/ri';
 import { IoShareSocialOutline } from 'react-icons/io5';
 import { Modal } from '../components/Modal';
 import { FaXmark } from 'react-icons/fa6';
+import { useUser } from '../components/useUser';
 
 export function CalendarDetails() {
+  const { user } = useUser();
+
   const [isLoading, setIsLoading] = useState(true);
   const [calIsLoading, setCalIsLoading] = useState(false);
+  const [inviteIsLoading, setInviteIsLoading] = useState(false);
   const [error, setError] = useState<unknown>();
 
   const [calendar, setCalendar] = useState<Calendar>();
   const [marks, setMarks] = useState<Mark[]>([]);
+  const { calendarId } = useParams();
 
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [goalProgress, setGoalProgress] = useState(0);
 
   const [shareIsOpen, setShareIsOpen] = useState(false);
   const [shareInput, setShareInput] = useState<string>();
-
-  const { calendarId } = useParams();
 
   // queries for the calendar whose id is in the url upon mounting
   useEffect(() => {
@@ -98,23 +101,27 @@ export function CalendarDetails() {
     setMarks(marks);
   }
 
-  async function handleShare(event: React.FormEvent<HTMLFormElement>) {
+  async function handleInvite(event: React.FormEvent<HTMLFormElement>) {
     try {
       event.preventDefault();
+      setInviteIsLoading(true);
       if (!shareInput) throw new Error('must provide username');
       if (!calendarId) throw new Error("shouldn't happen");
+      if (!user) throw new Error('you must be logged in');
       const shareUser = await getUser(shareInput);
-      const newAccess = await createAccess({
+      const newInvite = await createInvite({
         calendarId: +calendarId,
-        userId: shareUser.userId,
-        accessType: 'viewer',
+        ownerId: user.userId,
+        shareeId: shareUser.userId,
       });
-      if (!newAccess) throw new Error('calendar share was unsuccessful');
+      if (!newInvite) throw new Error('calendar share was unsuccessful');
       alert('Shared your calendar!');
-      setShareIsOpen(false);
+      setShareInput(undefined);
     } catch (err) {
       setError(err);
       console.error(err);
+    } finally {
+      setInviteIsLoading(false);
     }
   }
 
@@ -155,6 +162,9 @@ export function CalendarDetails() {
     small:bottom-[30px] big:left-[200px] big:right-[200px]
     small:bottom-[30px]`;
 
+  const shareBtnStyle = 'rounded w-[70px] bg-blue-200 px-[10px]';
+  const shareBtnLoadingStyle = 'rounded w-[70px] bg-gray-200 px-[10px]';
+
   if (calendarId === undefined) throw new Error("shouldn't happen");
 
   return (
@@ -163,11 +173,13 @@ export function CalendarDetails() {
       <div className={headerDivStyle}>
         <h1 className="text-[24px] max-w-[90%]">{calendar.name}</h1>
         <div className="flex px-[10px]">
+          {/* share button */}
           <button
             onClick={() => setShareIsOpen(true)}
             className="text-[24px] mr-[20px]">
             <IoShareSocialOutline />
           </button>
+          {/* edit button */}
           <Link to={`/calendar/form/${calendarId}`}>
             <div className="text-[24px]">
               <RiPencilFill />
@@ -175,6 +187,7 @@ export function CalendarDetails() {
           </Link>
         </div>
       </div>
+      {/* share modal */}
       <Modal
         className={'w-[85%] max-w-[800px] min-w-[295px]'}
         isOpen={shareIsOpen}
@@ -182,6 +195,7 @@ export function CalendarDetails() {
         <div className="p-8">
           <div className="flex justify-between mb-[15px]">
             <h1 className="text-[20px]">Share Calendar</h1>
+            {/* close button */}
             <button
               onClick={() => setShareIsOpen(false)}
               type="button"
@@ -189,11 +203,11 @@ export function CalendarDetails() {
               <FaXmark />
             </button>
           </div>
-          <form onSubmit={handleShare}>
-            <span>
-              By sharing a calendar, you can let other people view your
-              progress!
-            </span>
+          <span>
+            By sharing a calendar, you can let other people view your progress!
+          </span>
+          {/* username input */}
+          <form onSubmit={handleInvite}>
             <div className="flex mt-[10px]">
               <input
                 required
@@ -202,8 +216,18 @@ export function CalendarDetails() {
                 placeholder="Add a friend by username"
                 className="border rounded p-[5px] w-full mr-[10px]"
               />
-              <button type="submit" className="rounded bg-blue-200 px-[10px]">
-                Share
+              <button
+                type="submit"
+                className={
+                  inviteIsLoading ? shareBtnLoadingStyle : shareBtnStyle
+                }>
+                {inviteIsLoading ? (
+                  <div className="flex justify-center items-center animate-spin-slow">
+                    <BiLoaderCircle />
+                  </div>
+                ) : (
+                  'Share'
+                )}
               </button>
             </div>
           </form>

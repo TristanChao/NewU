@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars -- Remove when used */
 import 'dotenv/config';
 import express from 'express';
 import pg from 'pg';
@@ -91,6 +90,23 @@ app.post('/api/auth/sign-in', async (req, res, next) => {
     const payload = { userId, username, displayName };
     const token = jwt.sign(payload, hashKey);
     res.json({ user: payload, token });
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get('/api/user/:username', authMiddleware, async (req, res, next) => {
+  try {
+    const { username } = req.params;
+    const sql = `
+      select *
+      from "users"
+      where "username" = $1;
+    `;
+    const result = await db.query(sql, [username]);
+    const readUser = result.rows[0];
+    if (!readUser) throw new ClientError(404, `User not found`);
+    res.json(readUser);
   } catch (err) {
     next(err);
   }
@@ -331,21 +347,50 @@ app.post('/api/access', authMiddleware, async (req, res, next) => {
   }
 });
 
-app.get('/api/user/:username', authMiddleware, async (req, res, next) => {
+app.post('/api/invite', authMiddleware, async (req, res, next) => {
   try {
-    const { username } = req.params;
+    const { calendarId, ownerId, shareeId } = req.body;
     const sql = `
-      select *
-      from "users"
-      where "username" = $1;
+      insert into "shareInvites" ("calendarId", "ownerId", "shareeId")
+      values ($1, $2, $3)
+      returning *;
     `;
-    const result = await db.query(sql, [username]);
-    const readUser = result.rows[0];
-    if (!readUser) throw new ClientError(404, `User not found`);
-    res.json(readUser);
+    const params = [calendarId, ownerId, shareeId];
+    const result = await db.query(sql, params);
+    const newInvite = result.rows[0];
+    if (!newInvite) throw new ClientError(400, 'Error creating invite');
+    res.json(newInvite);
   } catch (err) {
     next(err);
   }
+});
+
+app.get('/api/invites', authMiddleware, async (req, res, next) => {
+  try {
+    const sql = `
+      select "shareInvites"."calendarId", "users"."username" as "ownerUsername", "users"."displayName" as "ownerDisplayName", "cals"."name" as "calendarName", "cals"."color"
+      from "shareInvites"
+      join "calendars" as "cals" using ("calendarId")
+      join "users" on "users"."userId" = "shareInvites"."ownerId"
+      where "shareeId" = $1
+      order by "inviteId" desc;
+    `;
+    const result = await db.query(sql, [req.user?.userId]);
+    res.json(result.rows);
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.delete('/api/invite', authMiddleware, async (req, res, next) => {
+  const { calendarId, shareeId } = req.body;
+  const sql = `
+    delete
+    from "shareInvites"
+    where "calendarId" = $1
+      and "shareeId" = $2
+    returning *;
+  `;
 });
 
 /*

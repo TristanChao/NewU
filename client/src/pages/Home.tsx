@@ -75,7 +75,7 @@ export function Home() {
     try {
       setIsLoading(true);
       const body = {
-        username: 'demo',
+        username: 'Demo',
         password: 'demoPassword987',
       };
       const { user, token } = await signIn(body);

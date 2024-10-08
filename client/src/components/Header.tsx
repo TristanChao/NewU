@@ -72,6 +72,9 @@ export function Header() {
               Log Out
             </a>
           </li>
+          <li>
+            <Link to="/invites">Share Invites</Link>
+          </li>
         </ul>
       </Popup>
     </>

@@ -43,6 +43,14 @@ CREATE TABLE "habitMarks" (
   "createdAt"   timestamptz(6)  not null default now()
 );
 
+CREATE TABLE "shareInvites" (
+  "inviteId"     serial         PRIMARY KEY,
+  "calendarId"  integer         not null,
+  "ownerId"     integer         not null,
+  "shareeId"    integer         not null,
+  "createdAt"   timestamptz(6)  not null default now()
+);
+
 ALTER TABLE "calendars" ADD FOREIGN KEY ("ownerId") REFERENCES "users" ("userId");
 
 ALTER TABLE "calendarAccess" ADD FOREIGN KEY ("calendarId") REFERENCES "calendars" ("calendarId");
@@ -52,3 +60,9 @@ ALTER TABLE "calendarAccess" ADD FOREIGN KEY ("userId") REFERENCES "users" ("use
 ALTER TABLE "habitMarks" ADD FOREIGN KEY ("calendarId") REFERENCES "calendars" ("calendarId");
 
 ALTER TABLE "habitMarks" ADD FOREIGN KEY ("ownerId") REFERENCES "users" ("userId");
+
+ALTER TABLE "shareInvites" ADD FOREIGN KEY ("calendarId") REFERENCES "calendars" ("calendarId");
+
+ALTER TABLE "shareInvites" ADD FOREIGN KEY ("ownerId") REFERENCES "users" ("userId");
+
+ALTER TABLE "shareInvites" ADD FOREIGN KEY ("shareeId") REFERENCES "users" ("userId");

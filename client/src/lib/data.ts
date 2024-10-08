@@ -30,6 +30,21 @@ export type Access = {
   accessType: string;
 };
 
+export type Invite = {
+  inviteId: number;
+  calendarId: number;
+  ownerId: number;
+  shareeId: number;
+};
+
+export type CalendarShare = {
+  calendarId: number;
+  ownerUsername: string;
+  ownerDisplayName: string;
+  calendarName: string;
+  color: string;
+};
+
 /**
  * Converts a Date object to a string.
  * @param date A Date object.
@@ -464,4 +479,44 @@ export async function getUser(username: string): Promise<User> {
   if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
   const readUser = (await res.json()) as User;
   return readUser;
+}
+
+type CreateInviteParams = {
+  calendarId: number;
+  ownerId: number;
+  shareeId: number;
+};
+export async function createInvite({
+  calendarId,
+  ownerId,
+  shareeId,
+}: CreateInviteParams): Promise<Invite> {
+  const req = {
+    method: 'post',
+    headers: {
+      'content-type': 'application/json',
+      Authorization: ('Bearer ' + readToken()) as string,
+    },
+    body: JSON.stringify({
+      calendarId,
+      ownerId,
+      shareeId,
+    }),
+  };
+  const res = await fetch('/api/invite', req);
+  if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
+  const newInvite = (await res.json()) as Invite;
+  return newInvite;
+}
+
+export async function readInvites(): Promise<CalendarShare[]> {
+  const req = {
+    headers: {
+      Authorization: ('Bearer ' + readToken()) as string,
+    },
+  };
+  const res = await fetch('/api/invites', req);
+  if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
+  const invites = (await res.json()) as CalendarShare[];
+  return invites;
 }
