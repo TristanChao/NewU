@@ -331,13 +331,13 @@ app.put('/api/mark/:markId', authMiddleware, async (req, res, next) => {
 
 app.post('/api/access', authMiddleware, async (req, res, next) => {
   try {
-    const { calendarId, userId, accessType } = req.body;
+    const { calendarId, accessType } = req.body;
     const sql = `
       insert into "calendarAccess" ("calendarId", "userId", "accessType")
       values ($1, $2, $3)
       returning *;
     `;
-    const params = [calendarId, userId, accessType];
+    const params = [calendarId, req.user?.userId, accessType];
     const result = await db.query(sql, params);
     const newAccess = result.rows[0];
     if (!newAccess) throw new ClientError(400, 'Error giving calendar access');
@@ -368,7 +368,7 @@ app.post('/api/invite', authMiddleware, async (req, res, next) => {
 app.get('/api/invites', authMiddleware, async (req, res, next) => {
   try {
     const sql = `
-      select "shareInvites"."calendarId", "users"."username" as "ownerUsername", "users"."displayName" as "ownerDisplayName", "cals"."name" as "calendarName", "cals"."color"
+      select "shareInvites"."inviteId", "shareInvites"."calendarId", "users"."username" as "ownerUsername", "users"."displayName" as "ownerDisplayName", "cals"."name" as "calendarName", "cals"."color"
       from "shareInvites"
       join "calendars" as "cals" using ("calendarId")
       join "users" on "users"."userId" = "shareInvites"."ownerId"
@@ -383,14 +383,23 @@ app.get('/api/invites', authMiddleware, async (req, res, next) => {
 });
 
 app.delete('/api/invite', authMiddleware, async (req, res, next) => {
-  const { calendarId, shareeId } = req.body;
-  const sql = `
-    delete
-    from "shareInvites"
-    where "calendarId" = $1
-      and "shareeId" = $2
-    returning *;
-  `;
+  try {
+    const { calendarId } = req.body;
+    const sql = `
+      delete
+      from "shareInvites"
+      where "calendarId" = $1
+        and "shareeId" = $2
+      returning *;
+    `;
+    const params = [calendarId, req.user?.userId];
+    const result = await db.query(sql, params);
+    const deletedInvite = result.rows[0];
+    if (!deletedInvite) throw new ClientError(404, 'Error deleting invite');
+    res.json(deletedInvite);
+  } catch (err) {
+    next(err);
+  }
 });
 
 /*

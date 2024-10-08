@@ -38,6 +38,7 @@ export type Invite = {
 };
 
 export type CalendarShare = {
+  inviteId: number;
   calendarId: number;
   ownerUsername: string;
   ownerDisplayName: string;
@@ -442,7 +443,6 @@ export async function updateMark({
 
 type CreateAccessParams = {
   calendarId: number;
-  userId: number;
   accessType: string;
 };
 /**
@@ -452,11 +452,10 @@ type CreateAccessParams = {
  */
 export async function createAccess({
   calendarId,
-  userId,
   accessType,
 }: CreateAccessParams): Promise<Access> {
   const req = {
-    body: JSON.stringify({ calendarId, userId, accessType }),
+    body: JSON.stringify({ calendarId, accessType }),
     headers: {
       'content-type': 'application/json',
       Authorization: ('Bearer ' + readToken()) as string,
@@ -519,4 +518,19 @@ export async function readInvites(): Promise<CalendarShare[]> {
   if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
   const invites = (await res.json()) as CalendarShare[];
   return invites;
+}
+
+export async function deleteInvite(calendarId: number): Promise<Invite> {
+  const req = {
+    method: 'delete',
+    headers: {
+      'content-type': 'application/json',
+      Authorization: ('Bearer ' + readToken()) as string,
+    },
+    body: JSON.stringify({ calendarId }),
+  };
+  const res = await fetch('/api/invite', req);
+  if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
+  const deletedInvite = (await res.json()) as Invite;
+  return deletedInvite;
 }
