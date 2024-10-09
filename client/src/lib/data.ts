@@ -511,6 +511,36 @@ export async function createAccess({
   return newAccess;
 }
 
+export async function readAccess(calendarId: number): Promise<Access[]> {
+  const req = {
+    headers: {
+      Authorization: ('Bearer ' + readToken()) as string,
+    },
+  };
+  const res = await fetch(`/api/access/${calendarId}`, req);
+  if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
+  const accesses = (await res.json()) as Access[];
+  return accesses;
+}
+
+export async function deleteAccesses(calendarId: string): Promise<Access[]> {
+  const req = {
+    method: 'delete',
+    headers: {
+      Authorization: ('Bearer ' + readToken()) as string,
+    },
+  };
+  const res = await fetch(`/api/accesses/${calendarId}`, req);
+  if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
+  const deletedAccesses = (await res.json()) as Access[];
+  return deletedAccesses;
+}
+
+/**
+ * Retrieves various details of a specific user by username.
+ * @param username A string of a user's username.
+ * @returns An object of a user's details.
+ */
 export async function getUser(username: string): Promise<User> {
   const req = {
     headers: {
@@ -576,16 +606,4 @@ export async function deleteInvite(calendarId: number): Promise<Invite> {
   if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
   const deletedInvite = (await res.json()) as Invite;
   return deletedInvite;
-}
-
-export async function readAccess(calendarId: number): Promise<Access[]> {
-  const req = {
-    headers: {
-      Authorization: ('Bearer ' + readToken()) as string,
-    },
-  };
-  const res = await fetch(`/api/access/${calendarId}`, req);
-  if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
-  const accesses = (await res.json()) as Access[];
-  return accesses;
 }

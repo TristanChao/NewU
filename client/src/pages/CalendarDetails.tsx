@@ -177,7 +177,7 @@ export function CalendarDetails() {
 
   const dayStyle = 'w-[40px] text-center';
 
-  let markCalStyle = 'mb-[10px] rounded py-[10px]';
+  let markCalStyle = 'mb-[20px] rounded py-[10px]';
   markCalStyle += convertColorLightBg(calendar.color);
 
   const buttonCtnStyle = `flex justify-between absolute left-[15px]
@@ -195,20 +195,22 @@ export function CalendarDetails() {
       {/* calendar header */}
       <div className={headerDivStyle}>
         <h1 className="text-[24px] max-w-[90%]">{calendar.name}</h1>
-        <div className="flex px-[10px]">
-          {/* share button */}
-          <button
-            onClick={() => setShareIsOpen(true)}
-            className="text-[24px] mr-[20px]">
-            <IoShareSocialOutline />
-          </button>
-          {/* edit button */}
-          <Link to={`/calendar/form/${calendarId}`}>
-            <div className="text-[24px]">
-              <RiPencilFill />
-            </div>
-          </Link>
-        </div>
+        {isCalendarOwned && (
+          <div className="flex px-[10px]">
+            {/* share button */}
+            <button
+              onClick={() => setShareIsOpen(true)}
+              className="text-[24px] mr-[20px]">
+              <IoShareSocialOutline />
+            </button>
+            {/* edit button */}
+            <Link to={`/calendar/form/${calendarId}`}>
+              <div className="text-[24px]">
+                <RiPencilFill />
+              </div>
+            </Link>
+          </div>
+        )}
       </div>
       {/* share modal */}
       <Modal
@@ -258,43 +260,50 @@ export function CalendarDetails() {
       </Modal>
       {/* calendar body */}
       <div className="px-[15px] small:px-[50px] big:px-[200px]">
-        {/* week label and selectors */}
-        <div className="flex items-center mb-[10px] justify-between">
-          <div>
-            {/* week back button */}
-            <button type="button" className="mr-[5px]" onClick={handleWeekBack}>
-              <FaChevronCircleLeft />
-            </button>
-            {/* week dates label */}
-            <h1 className="inline-block text-[20px] mr-[5px]">
-              {prettifyDate(findWeekStartEnd(currentDate)[0]) +
-                ' to ' +
-                prettifyDate(findWeekStartEnd(currentDate)[1])}
-            </h1>
-            {/* week forward button */}
-            <button type="button" onClick={handleWeekForward}>
-              <FaChevronCircleRight />
+        <div className="med:flex med:justify-between">
+          {/* week label and selectors */}
+          <div className="flex items-center mb-[15px] justify-between med:basis-[47%]">
+            <div>
+              {/* week back button */}
+              <button
+                type="button"
+                className="mr-[5px]"
+                onClick={handleWeekBack}>
+                <FaChevronCircleLeft />
+              </button>
+              {/* week dates label */}
+              <h1 className="inline-block text-[20px] mr-[5px]">
+                {prettifyDate(findWeekStartEnd(currentDate)[0]) +
+                  ' to ' +
+                  prettifyDate(findWeekStartEnd(currentDate)[1])}
+              </h1>
+              {/* week forward button */}
+              <button type="button" onClick={handleWeekForward}>
+                <FaChevronCircleRight />
+              </button>
+            </div>
+            {/* set date to today button */}
+            <button
+              type="button"
+              className="py-[5px] px-[10px] border rounded hover:bg-gray-100"
+              onClick={handleWeekReset}>
+              Today
             </button>
           </div>
-          {/* set date to today button */}
-          <button
-            type="button"
-            className="py-[5px] px-[10px] border rounded hover:bg-gray-100"
-            onClick={handleWeekReset}>
-            Today
-          </button>
-        </div>
-        {/* weekly goal section */}
-        <div className="flex justify-between items-center mb-[10px]">
-          <span className="text-[18px]">
-            Your goal:
-            <br />
-            {calendar.goal} days a week
-          </span>
-          <WeekGoalMarker
-            color={calendar.color}
-            mark={goalProgress >= calendar.goal}
-          />
+          {/* dividing line */}
+          <div className="hidden med:block border mb-[15px]"></div>
+          {/* weekly goal section */}
+          <div className="flex justify-between items-center mb-[15px] med:basis-[47%]">
+            <span className="text-[18px]">
+              Your goal:
+              <br />
+              {calendar.goal} days a week
+            </span>
+            <WeekGoalMarker
+              color={calendar.color}
+              mark={goalProgress >= calendar.goal}
+            />
+          </div>
         </div>
         {/* marker calendar */}
         <div className={markCalStyle}>

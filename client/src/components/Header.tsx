@@ -66,7 +66,12 @@ export function Header() {
         isOpen={menuIsOpen}
         popupAccessRef={menuBtnRef}
         onShadeClick={() => setMenuIsOpen(false)}>
-        <ul className="text-center">
+        <ul className="p-[10px] text-center text-[20px] space-y-[8px]">
+          <li>
+            <Link to="/" onClick={() => setMenuIsOpen(false)}>
+              Home
+            </Link>
+          </li>
           <li>
             <Link to="/shared" onClick={() => setMenuIsOpen(false)}>
               Shared With Me

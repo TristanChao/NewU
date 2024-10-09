@@ -426,6 +426,42 @@ app.post('/api/access', authMiddleware, async (req, res, next) => {
   }
 });
 
+app.get('/api/access/:calendarId', authMiddleware, async (req, res, next) => {
+  try {
+    const { calendarId } = req.params;
+    const sql = `
+      select *
+      from "calendarAccess"
+      where "calendarId" = $1
+        and "userId" = $2;
+    `;
+    const params = [calendarId, req.user?.userId];
+    const result = await db.query(sql, params);
+    res.json(result.rows);
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.delete(
+  '/api/accesses/:calendarId',
+  authMiddleware,
+  async (req, res, next) => {
+    try {
+      const { calendarId } = req.params;
+      const sql = `
+      delete
+      from "calendarAccess"
+      where "calendarId" = $1;
+    `;
+      const result = await db.query(sql, [calendarId]);
+      res.json(result.rows);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
 app.post('/api/invite', authMiddleware, async (req, res, next) => {
   try {
     const { calendarId, ownerId, shareeId } = req.body;
@@ -476,23 +512,6 @@ app.delete('/api/invite', authMiddleware, async (req, res, next) => {
     const deletedInvite = result.rows[0];
     if (!deletedInvite) throw new ClientError(404, 'Error deleting invite');
     res.json(deletedInvite);
-  } catch (err) {
-    next(err);
-  }
-});
-
-app.get('/api/access/:calendarId', authMiddleware, async (req, res, next) => {
-  try {
-    const { calendarId } = req.params;
-    const sql = `
-      select *
-      from "calendarAccess"
-      where "calendarId" = $1
-        and "userId" = $2;
-    `;
-    const params = [calendarId, req.user?.userId];
-    const result = await db.query(sql, params);
-    res.json(result.rows);
   } catch (err) {
     next(err);
   }
