@@ -15,7 +15,8 @@ type Props = {
   color: string;
   weekMarks: Mark[];
   weekStart?: string;
-  onMarkUpdate: (marks: Mark[], calendarId: number) => void;
+  owned: boolean;
+  onMarkUpdate?: (marks: Mark[], calendarId: number) => void;
 };
 export function ListCalendar({
   calendarId,
@@ -23,6 +24,7 @@ export function ListCalendar({
   color,
   weekMarks,
   weekStart,
+  owned,
   onMarkUpdate,
 }: Props) {
   if (weekStart === undefined) {
@@ -69,6 +71,7 @@ export function ListCalendar({
           weekMarks={weekMarks}
           calendarId={calendarId}
           weekStart={weekStart}
+          owned={owned}
           onMarkUpdate={onMarkUpdate}
         />
       </div>
@@ -77,6 +80,7 @@ export function ListCalendar({
           color={color}
           mark={todaysMark ? todaysMark.isCompleted : false}
           day={new Date().getDay()}
+          owned={owned}
           onUpdate={handleUpdateSingleMark}
         />
       </div>

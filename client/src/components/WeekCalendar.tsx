@@ -8,13 +8,15 @@ type Props = {
   weekMarks: Mark[];
   weekStart: string;
   calendarId: number;
-  onMarkUpdate: (marks: Mark[], calendarId: number) => void;
+  owned: boolean;
+  onMarkUpdate?: (marks: Mark[], calendarId: number) => void;
 };
 export function WeekCalendar({
   color,
   weekMarks,
   weekStart,
   calendarId,
+  owned,
   onMarkUpdate,
 }: Props) {
   // const [days, setDays] = useState<JSX.Element[]>([]);
@@ -24,8 +26,6 @@ export function WeekCalendar({
   const [isLoading, setIsLoading] = useState(false);
 
   const calendarStyle = 'flex justify-around rounded';
-
-  useEffect(() => {}, [weekCompletion]);
 
   useEffect(() => {
     const marksArr: Mark[] = weekMarks.filter(
@@ -58,6 +58,8 @@ export function WeekCalendar({
     isCompleted: boolean
   ): Promise<void> {
     try {
+      if (!owned) return;
+      if (onMarkUpdate === undefined) return;
       setIsLoading(true);
 
       const marksArr = [...marks];
@@ -72,8 +74,9 @@ export function WeekCalendar({
         markToUpdate = markToUpdateArr[markToUpdateArr.length - 1];
       }
       if (markToUpdate === undefined) {
-        const date = new Date(weekStart);
+        const date = new Date(weekStart + 'T00:00');
         date.setDate(date.getDate() + day);
+        console.log({ date });
         result = await createMark({
           calendarId,
           date: dateToString(date),
@@ -118,42 +121,49 @@ export function WeekCalendar({
           color={color}
           mark={weekCompletion[0]}
           day={0}
+          owned={owned}
           onUpdate={handleUpdateMark}
         />
         <HabitMarker
           color={color}
           mark={weekCompletion[1]}
           day={1}
+          owned={owned}
           onUpdate={handleUpdateMark}
         />
         <HabitMarker
           color={color}
           mark={weekCompletion[2]}
           day={2}
+          owned={owned}
           onUpdate={handleUpdateMark}
         />
         <HabitMarker
           color={color}
           mark={weekCompletion[3]}
           day={3}
+          owned={owned}
           onUpdate={handleUpdateMark}
         />
         <HabitMarker
           color={color}
           mark={weekCompletion[4]}
           day={4}
+          owned={owned}
           onUpdate={handleUpdateMark}
         />
         <HabitMarker
           color={color}
           mark={weekCompletion[5]}
           day={5}
+          owned={owned}
           onUpdate={handleUpdateMark}
         />
         <HabitMarker
           color={color}
           mark={weekCompletion[6]}
           day={6}
+          owned={owned}
           onUpdate={handleUpdateMark}
         />
       </div>

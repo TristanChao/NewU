@@ -11,6 +11,8 @@ import { SignIn } from './pages/SignIn.tsx';
 import { CalendarDetails } from './pages/CalendarDetails.tsx';
 import { NotFound } from './pages/NotFound.tsx';
 import { CalendarForm } from './pages/CalendarForm.tsx';
+import { ShareInvites } from './pages/ShareInvites.tsx';
+import { SharedCalendars } from './pages/SharedCalendars.tsx';
 
 export default function App() {
   return (
@@ -22,6 +24,8 @@ export default function App() {
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="/calendar/:calendarId" element={<CalendarDetails />} />
           <Route path="/calendar/form/:calendarId" element={<CalendarForm />} />
+          <Route path="/invites" element={<ShareInvites />} />
+          <Route path="/shared" element={<SharedCalendars />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

@@ -1,11 +1,12 @@
 import { ReactNode, useEffect, useRef } from 'react';
 
 type Props = {
+  className?: string;
   children: ReactNode;
   isOpen: boolean;
   onClose: () => void;
 };
-export function Modal({ children, isOpen, onClose }: Props) {
+export function Modal({ className, children, isOpen, onClose }: Props) {
   const modal = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
@@ -14,7 +15,7 @@ export function Modal({ children, isOpen, onClose }: Props) {
   }, [isOpen]);
 
   return (
-    <dialog ref={modal} onClose={onClose}>
+    <dialog className={className} ref={modal} onClose={onClose}>
       {children}
     </dialog>
   );

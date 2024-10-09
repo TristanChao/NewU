@@ -66,7 +66,17 @@ export function Header() {
         isOpen={menuIsOpen}
         popupAccessRef={menuBtnRef}
         onShadeClick={() => setMenuIsOpen(false)}>
-        <ul>
+        <ul className="text-center">
+          <li>
+            <Link to="/shared" onClick={() => setMenuIsOpen(false)}>
+              Shared With Me
+            </Link>
+          </li>
+          <li>
+            <Link to="/invites" onClick={() => setMenuIsOpen(false)}>
+              Calendar Invitations
+            </Link>
+          </li>
           <li>
             <a className="cursor-pointer" onClick={handleLogoutClick}>
               Log Out

@@ -3,6 +3,7 @@ import {
   Calendar,
   convertColorBg,
   convertColorBorder,
+  createAccess,
   createCal,
   deleteCal,
   readCalendar,
@@ -11,14 +12,18 @@ import {
 import { CiCircleMinus, CiCirclePlus } from 'react-icons/ci';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Modal } from '../components/Modal';
+import { useUser } from '../components/useUser';
 
 export function CalendarForm() {
+  const { user } = useUser();
+
   const [colorButtons, setColorButtons] = useState<JSX.Element[]>([]);
   const [color, setColor] = useState('red');
   const [name, setName] = useState<string>();
   const [goal, setGoal] = useState(7);
   const [desc, setDesc] = useState<string>();
   const [deleteIsOpen, setDeleteIsOpen] = useState(false);
+
   const { calendarId } = useParams();
   const navigate = useNavigate();
 
@@ -60,18 +65,24 @@ export function CalendarForm() {
     try {
       event.preventDefault();
       if (!name) throw new Error('name is required');
-      let result: Calendar;
+      if (!user) throw new Error('you must be logged in');
+      let calResult: Calendar;
       if (Number(calendarId) === 0) {
-        result = await createCal({
+        calResult = await createCal({
           type: 'normal',
           name,
           color,
           desc,
           goal,
         });
-        alert(`Created ${result.name}`);
+        await createAccess({
+          calendarId: calResult.calendarId,
+          userId: user?.userId,
+          accessType: 'owner',
+        });
+        alert(`Created ${calResult.name}`);
       } else {
-        result = await updateCal({
+        calResult = await updateCal({
           calendarId: Number(calendarId),
           type: 'normal',
           name,
@@ -79,9 +90,9 @@ export function CalendarForm() {
           desc,
           goal,
         });
-        alert(`Updated ${result.name}`);
+        alert(`Updated ${calResult.name}`);
       }
-      navigate(`/calendar/${result.calendarId}`);
+      navigate(`/calendar/${calResult.calendarId}`);
     } catch (err) {
       console.error(err);
     }

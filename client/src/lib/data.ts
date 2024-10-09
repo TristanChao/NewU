@@ -24,6 +24,28 @@ export type Mark = {
   isCompleted: boolean;
 };
 
+export type Access = {
+  calendarId: number;
+  userId: number;
+  accessType: string;
+};
+
+export type Invite = {
+  inviteId: number;
+  calendarId: number;
+  ownerId: number;
+  shareeId: number;
+};
+
+export type CalendarShare = {
+  inviteId: number;
+  calendarId: number;
+  ownerUsername: string;
+  ownerDisplayName: string;
+  calendarName: string;
+  color: string;
+};
+
 /**
  * Converts a Date object to a string.
  * @param date A Date object.
@@ -313,9 +335,33 @@ export async function deleteCal(calendarId: string): Promise<Calendar> {
     method: 'delete',
   };
   const res = await fetch(`/api/calendar/${calendarId}`, req);
-  if (!res.ok) throw new Error(`fetchError: $res.status`);
+  if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
   const deletedCal = (await res.json()) as Calendar;
   return deletedCal;
+}
+
+export async function readSharedCals(): Promise<(Calendar & Access)[]> {
+  const req = {
+    headers: {
+      Authorization: ('Bearer ' + readToken()) as string,
+    },
+  };
+  const res = await fetch('/api/shared/calendars', req);
+  if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
+  const sharedCals = (await res.json()) as (Calendar & Access)[];
+  return sharedCals;
+}
+
+export async function readViewerCal(calendarId: string): Promise<Calendar> {
+  const req = {
+    headers: {
+      Authorization: ('Bearer ' + readToken()) as string,
+    },
+  };
+  const res = await fetch(`/api/viewerCal/${calendarId}`, req);
+  if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
+  const viewCal = (await res.json()) as Calendar;
+  return viewCal;
 }
 
 // ------------------------------------------------------------------------
@@ -415,4 +461,131 @@ export async function updateMark({
   if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
   const updatedMark = (await res.json()) as Mark;
   return updatedMark;
+}
+
+export async function readSharedWeekMarks(date: string): Promise<Mark[]> {
+  const [start, end] = findWeekStartEnd(date);
+  const req = {
+    method: 'post',
+    headers: {
+      'content-type': 'application/json',
+      Authorization: ('Bearer ' + readToken()) as string,
+    },
+    body: JSON.stringify({
+      start,
+      end,
+    }),
+  };
+  const res = await fetch('/api/shared/marks', req);
+  if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
+  const sharedMarks = (await res.json()) as Mark[];
+  return sharedMarks;
+}
+
+// --------------------------------------------------------------------
+
+type CreateAccessParams = {
+  calendarId: number;
+  accessType: string;
+};
+/**
+ * Inserts a new row in the calendarAccess db table.
+ * @param param An object containing calendarId, userId, and accessType
+ * @returns The newly created access object.
+ */
+export async function createAccess({
+  calendarId,
+  accessType,
+}: CreateAccessParams): Promise<Access> {
+  const req = {
+    body: JSON.stringify({ calendarId, accessType }),
+    headers: {
+      'content-type': 'application/json',
+      Authorization: ('Bearer ' + readToken()) as string,
+    },
+    method: 'post',
+  };
+  const res = await fetch('/api/access', req);
+  if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
+  const newAccess = (await res.json()) as Access;
+  return newAccess;
+}
+
+export async function getUser(username: string): Promise<User> {
+  const req = {
+    headers: {
+      Authorization: ('Bearer ' + readToken()) as string,
+    },
+  };
+  const res = await fetch(`/api/user/${username}`, req);
+  if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
+  const readUser = (await res.json()) as User;
+  return readUser;
+}
+
+type CreateInviteParams = {
+  calendarId: number;
+  ownerId: number;
+  shareeId: number;
+};
+export async function createInvite({
+  calendarId,
+  ownerId,
+  shareeId,
+}: CreateInviteParams): Promise<Invite> {
+  const req = {
+    method: 'post',
+    headers: {
+      'content-type': 'application/json',
+      Authorization: ('Bearer ' + readToken()) as string,
+    },
+    body: JSON.stringify({
+      calendarId,
+      ownerId,
+      shareeId,
+    }),
+  };
+  const res = await fetch('/api/invite', req);
+  if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
+  const newInvite = (await res.json()) as Invite;
+  return newInvite;
+}
+
+export async function readInvites(): Promise<CalendarShare[]> {
+  const req = {
+    headers: {
+      Authorization: ('Bearer ' + readToken()) as string,
+    },
+  };
+  const res = await fetch('/api/invites', req);
+  if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
+  const invites = (await res.json()) as CalendarShare[];
+  return invites;
+}
+
+export async function deleteInvite(calendarId: number): Promise<Invite> {
+  const req = {
+    method: 'delete',
+    headers: {
+      'content-type': 'application/json',
+      Authorization: ('Bearer ' + readToken()) as string,
+    },
+    body: JSON.stringify({ calendarId }),
+  };
+  const res = await fetch('/api/invite', req);
+  if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
+  const deletedInvite = (await res.json()) as Invite;
+  return deletedInvite;
+}
+
+export async function readAccess(calendarId: number): Promise<Access[]> {
+  const req = {
+    headers: {
+      Authorization: ('Bearer ' + readToken()) as string,
+    },
+  };
+  const res = await fetch(`/api/access/${calendarId}`, req);
+  if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
+  const accesses = (await res.json()) as Access[];
+  return accesses;
 }

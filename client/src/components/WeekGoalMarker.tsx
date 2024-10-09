@@ -16,12 +16,12 @@ export function WeekGoalMarker({ mark, color }: Props) {
   }
 
   return (
-    <button className={buttonStyle} type="button">
+    <div className={buttonStyle}>
       {mark && (
         <div className="text-[20px]">
           <FaCheck />
         </div>
       )}
-    </button>
+    </div>
   );
 }
