@@ -77,7 +77,6 @@ export function CalendarForm() {
         });
         await createAccess({
           calendarId: calResult.calendarId,
-          userId: user?.userId,
           accessType: 'owner',
         });
         alert(`Created ${calResult.name}`);
