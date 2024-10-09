@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import {
   Calendar,
   dateToString,
+  findWeekStartEnd,
   Mark,
   readCalendars,
   readWeekMarks,
@@ -63,6 +64,8 @@ export function Home() {
           name={c.name}
           color={c.color}
           weekMarks={calMarks}
+          weekStart={findWeekStartEnd(new Date())[0]}
+          owned={true}
           onMarkUpdate={handleMarkUpdate}
         />
       );

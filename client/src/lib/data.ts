@@ -352,6 +352,18 @@ export async function readSharedCals(): Promise<(Calendar & Access)[]> {
   return sharedCals;
 }
 
+export async function readViewerCal(calendarId: string): Promise<Calendar> {
+  const req = {
+    headers: {
+      Authorization: ('Bearer ' + readToken()) as string,
+    },
+  };
+  const res = await fetch(`/api/viewerCal/${calendarId}`, req);
+  if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
+  const viewCal = (await res.json()) as Calendar;
+  return viewCal;
+}
+
 // ------------------------------------------------------------------------
 
 export async function readDateMarks(date: string): Promise<Mark[]> {
@@ -564,4 +576,16 @@ export async function deleteInvite(calendarId: number): Promise<Invite> {
   if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
   const deletedInvite = (await res.json()) as Invite;
   return deletedInvite;
+}
+
+export async function readAccess(calendarId: number): Promise<Access[]> {
+  const req = {
+    headers: {
+      Authorization: ('Bearer ' + readToken()) as string,
+    },
+  };
+  const res = await fetch(`/api/access/${calendarId}`, req);
+  if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
+  const accesses = (await res.json()) as Access[];
+  return accesses;
 }

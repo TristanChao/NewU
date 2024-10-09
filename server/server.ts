@@ -247,6 +247,40 @@ app.get('/api/shared/calendars', authMiddleware, async (req, res, next) => {
   }
 });
 
+app.get(
+  '/api/viewerCal/:calendarId',
+  authMiddleware,
+  async (req, res, next) => {
+    try {
+      const { calendarId } = req.params;
+      const sql = `
+      select "cals"."calendarId",
+             "cals"."ownerId",
+             "cals"."type",
+             "cals"."name",
+             "cals"."color",
+             "cals"."desc",
+             "cals"."goal"
+      from "calendarAccess"
+      join "calendars" as "cals" using ("calendarId")
+      where "calendarAccess"."userId" = $1
+        and "accessType" = 'viewer'
+        and "calendarId" = $2;
+    `;
+      const result = await db.query(sql, [
+        req.user?.userId,
+        Number(calendarId),
+      ]);
+      const calendar = result.rows[0];
+      res.json(calendar);
+      if (!calendar)
+        throw new ClientError(404, `calendar ${calendarId} not found`);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
 // ------------------------------------------------------------------------
 
 // gets a list of all the markers for a specified date belonging to the current user
@@ -442,6 +476,23 @@ app.delete('/api/invite', authMiddleware, async (req, res, next) => {
     const deletedInvite = result.rows[0];
     if (!deletedInvite) throw new ClientError(404, 'Error deleting invite');
     res.json(deletedInvite);
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get('/api/access/:calendarId', authMiddleware, async (req, res, next) => {
+  try {
+    const { calendarId } = req.params;
+    const sql = `
+      select *
+      from "calendarAccess"
+      where "calendarId" = $1
+        and "userId" = $2;
+    `;
+    const params = [calendarId, req.user?.userId];
+    const result = await db.query(sql, params);
+    res.json(result.rows);
   } catch (err) {
     next(err);
   }

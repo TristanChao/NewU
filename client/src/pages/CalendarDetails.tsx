@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
+  Access,
   Calendar,
   convertColorBg,
   convertColorLightBg,
@@ -9,7 +10,10 @@ import {
   getUser,
   Mark,
   prettifyDate,
+  readAccess,
   readCalendar,
+  readSharedWeekMarks,
+  readViewerCal,
   readWeekMarks,
 } from '../lib';
 import { Link, useParams } from 'react-router-dom';
@@ -34,6 +38,7 @@ export function CalendarDetails() {
   const [calendar, setCalendar] = useState<Calendar>();
   const [marks, setMarks] = useState<Mark[]>([]);
   const { calendarId } = useParams();
+  const [isCalendarOwned, setIsCalendarOwned] = useState<boolean>(false);
 
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [goalProgress, setGoalProgress] = useState(0);
@@ -47,12 +52,30 @@ export function CalendarDetails() {
       try {
         setCalIsLoading(true);
         if (calendarId === undefined) throw new Error("shouldn't happen");
-        setCalendar(await readCalendar(calendarId));
-        const allWeekMarks = await readWeekMarks(dateToString(currentDate));
-        const calWeekMarks = allWeekMarks.filter(
-          (mark) => mark.calendarId === +calendarId
-        );
-        setMarks([...calWeekMarks]);
+        const accesses: Access[] = await readAccess(Number(calendarId));
+        let owned = false;
+        accesses.forEach((access) => {
+          if (access.accessType === 'owner') owned = true;
+        });
+        setIsCalendarOwned(owned);
+
+        if (owned) {
+          setCalendar(await readCalendar(calendarId));
+          const allWeekMarks = await readWeekMarks(dateToString(currentDate));
+          const calWeekMarks = allWeekMarks.filter(
+            (mark) => mark.calendarId === +calendarId
+          );
+          setMarks([...calWeekMarks]);
+        } else if (accesses.length > 0) {
+          setCalendar(await readViewerCal(calendarId));
+          const sharedWeekMarks = await readSharedWeekMarks(
+            dateToString(currentDate)
+          );
+          const sharedCalWeekMarks = sharedWeekMarks.filter(
+            (mark) => mark.calendarId === +calendarId
+          );
+          setMarks([...sharedCalWeekMarks]);
+        }
       } catch (err) {
         console.error(err);
         setError(err);
@@ -297,6 +320,7 @@ export function CalendarDetails() {
                 weekMarks={marks}
                 calendarId={+calendarId}
                 weekStart={findWeekStartEnd(currentDate)[0] + 'T00:00'}
+                owned={isCalendarOwned}
                 onMarkUpdate={updateMarks}
               />
             </>

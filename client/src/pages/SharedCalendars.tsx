@@ -37,6 +37,7 @@ export function SharedCalendars() {
         calendarId={cal.calendarId}
         name={cal.name}
         color={cal.color}
+        owned={false}
         weekMarks={sharedWeekMarks}
       />
     ));
