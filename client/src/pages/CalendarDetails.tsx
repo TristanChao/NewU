@@ -319,7 +319,7 @@ export function CalendarDetails() {
                 color={calendar.color}
                 weekMarks={marks}
                 calendarId={+calendarId}
-                weekStart={findWeekStartEnd(currentDate)[0] + 'T00:00'}
+                weekStart={findWeekStartEnd(currentDate)[0]}
                 owned={isCalendarOwned}
                 onMarkUpdate={updateMarks}
               />

@@ -74,7 +74,9 @@ export function WeekCalendar({
         markToUpdate = markToUpdateArr[markToUpdateArr.length - 1];
       }
       if (markToUpdate === undefined) {
+        console.log({ weekStart });
         const date = new Date(weekStart + 'T00:00');
+        console.log({ day });
         date.setDate(date.getDate() + day);
         console.log({ date });
         result = await createMark({
