@@ -231,7 +231,7 @@ app.delete(
   }
 );
 
-app.get('/api/calendars/shared', authMiddleware, async (req, res, next) => {
+app.get('/api/shared/calendars', authMiddleware, async (req, res, next) => {
   try {
     const sql = `
       select *
@@ -347,12 +347,26 @@ app.put('/api/mark/:markId', authMiddleware, async (req, res, next) => {
   }
 });
 
-app.get('/api/marks/shared', authMiddleware, async (req, res, next) => {
+app.post('/api/shared/marks', authMiddleware, async (req, res, next) => {
   try {
+    const { start, end } = req.body;
     const sql = `
-      select *
-      from "habitMarks"
+      select "marks"."markId",
+             "marks"."calendarId",
+             "marks"."ownerId",
+             "marks"."date",
+             "marks"."day",
+             "marks"."isCompleted"
+      from "calendarAccess"
+      join "habitMarks" as "marks" using ("calendarId")
+      where "calendarAccess"."userId" = $1
+        and "calendarAccess"."accessType" = 'viewer'
+        and "marks"."date" >= $2
+        and "marks"."date" <= $3;
     `;
+    const params = [req.user?.userId, start, end];
+    const result = await db.query(sql, params);
+    res.json(result.rows);
   } catch (err) {
     next(err);
   }

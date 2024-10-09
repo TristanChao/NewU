@@ -44,7 +44,7 @@ CREATE TABLE "habitMarks" (
 );
 
 CREATE TABLE "shareInvites" (
-  "inviteId"     serial         PRIMARY KEY,
+  "inviteId"    serial          PRIMARY KEY,
   "calendarId"  integer         not null,
   "ownerId"     integer         not null,
   "shareeId"    integer         not null,

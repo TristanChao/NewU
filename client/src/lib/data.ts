@@ -346,7 +346,7 @@ export async function readSharedCals(): Promise<(Calendar & Access)[]> {
       Authorization: ('Bearer ' + readToken()) as string,
     },
   };
-  const res = await fetch('/api/calendars/shared', req);
+  const res = await fetch('/api/shared/calendars', req);
   if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
   const sharedCals = (await res.json()) as (Calendar & Access)[];
   return sharedCals;
@@ -451,7 +451,24 @@ export async function updateMark({
   return updatedMark;
 }
 
-export async function readSharedWeekMarks() {}
+export async function readSharedWeekMarks(date: string): Promise<Mark[]> {
+  const [start, end] = findWeekStartEnd(date);
+  const req = {
+    method: 'post',
+    headers: {
+      'content-type': 'application/json',
+      Authorization: ('Bearer ' + readToken()) as string,
+    },
+    body: JSON.stringify({
+      start,
+      end,
+    }),
+  };
+  const res = await fetch('/api/shared/marks', req);
+  if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
+  const sharedMarks = (await res.json()) as Mark[];
+  return sharedMarks;
+}
 
 // --------------------------------------------------------------------
 
