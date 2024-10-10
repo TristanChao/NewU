@@ -13,6 +13,8 @@ export function HabitMarker({ mark, color, day, owned, onUpdate }: Props) {
     w-[40px] h-[40px]
     flex justify-center items-center pointer-events-all`;
 
+  /* changes cursor style on hover over marks to reflect that non-owners cannot
+   click on one and have something happen */
   if (owned) {
     buttonStyle += ' cursor-pointer';
   } else {
@@ -21,6 +23,12 @@ export function HabitMarker({ mark, color, day, owned, onUpdate }: Props) {
 
   buttonStyle += convertColorBorder(color);
 
+  /* conditionally changes background color;
+   - when a mark is present, the background color will be the same as for the
+     calendar
+   - if there isn't a mark and the calendar is owned, it will be a light grey
+     on hover to reflect that you can click on it,
+   - otherwise it will just be transparent */
   if (mark) {
     buttonStyle += convertColorBg(color);
   } else if (owned) {

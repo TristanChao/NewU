@@ -406,6 +406,23 @@ app.post('/api/shared/marks', authMiddleware, async (req, res, next) => {
   }
 });
 
+app.delete('/api/marks/:calendarId', authMiddleware, async (req, res, next) => {
+  try {
+    const { calendarId } = req.params;
+    const sql = `
+      delete
+      from "habitMarks"
+      where "calendarId" = $1
+        and "ownerId" = $2
+      returning *;
+    `;
+    const result = await db.query(sql, [+calendarId, req.user?.userId]);
+    res.json(result.rows);
+  } catch (err) {
+    next(err);
+  }
+});
+
 // ------------------------------------------------------------------------
 
 app.post('/api/access', authMiddleware, async (req, res, next) => {
@@ -421,6 +438,24 @@ app.post('/api/access', authMiddleware, async (req, res, next) => {
     const newAccess = result.rows[0];
     if (!newAccess) throw new ClientError(400, 'Error giving calendar access');
     res.json(newAccess);
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.post('/api/invite', authMiddleware, async (req, res, next) => {
+  try {
+    const { calendarId, ownerId, shareeId } = req.body;
+    const sql = `
+      insert into "shareInvites" ("calendarId", "ownerId", "shareeId")
+      values ($1, $2, $3)
+      returning *;
+    `;
+    const params = [calendarId, ownerId, shareeId];
+    const result = await db.query(sql, params);
+    const newInvite = result.rows[0];
+    if (!newInvite) throw new ClientError(400, 'Error creating invite');
+    res.json(newInvite);
   } catch (err) {
     next(err);
   }
@@ -462,24 +497,6 @@ app.delete(
   }
 );
 
-app.post('/api/invite', authMiddleware, async (req, res, next) => {
-  try {
-    const { calendarId, ownerId, shareeId } = req.body;
-    const sql = `
-      insert into "shareInvites" ("calendarId", "ownerId", "shareeId")
-      values ($1, $2, $3)
-      returning *;
-    `;
-    const params = [calendarId, ownerId, shareeId];
-    const result = await db.query(sql, params);
-    const newInvite = result.rows[0];
-    if (!newInvite) throw new ClientError(400, 'Error creating invite');
-    res.json(newInvite);
-  } catch (err) {
-    next(err);
-  }
-});
-
 app.get('/api/invites', authMiddleware, async (req, res, next) => {
   try {
     const sql = `
@@ -516,6 +533,26 @@ app.delete('/api/invite', authMiddleware, async (req, res, next) => {
     next(err);
   }
 });
+
+app.delete(
+  '/api/invites/:calendarId',
+  authMiddleware,
+  async (req, res, next) => {
+    try {
+      const { calendarId } = req.params;
+      const sql = `
+      delete
+      from "shareInvites"
+      where "calendarId" = $1
+      returning *;
+    `;
+      const result = await db.query(sql, [calendarId]);
+      res.json(result.rows);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
 
 /*
  * Handles paths that aren't handled by any other route handler.

@@ -39,6 +39,12 @@ export function ListCalendar({
   const currentDate = dateToString();
   let todaysMark = weekMarks.find((mark) => mark.date === currentDate);
 
+  /* this function is for the smaller views when the calendars on the home page
+  will only show a single habit mark for the current day */
+  /**
+   * creates or updates the value of a single mark in the database, based on
+   * its nonexistent or original value in the weekMarks state
+   */
   async function handleUpdateSingleMark() {
     try {
       let result: Mark;

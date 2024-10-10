@@ -7,6 +7,8 @@ import {
   createCal,
   deleteAccesses,
   deleteCal,
+  deleteCalInvites,
+  deleteCalMarks,
   readCalendar,
   updateCal,
 } from '../lib';
@@ -102,6 +104,8 @@ export function CalendarForm() {
     try {
       if (!calendarId) throw new Error("shouldn't happen");
       await deleteAccesses(calendarId);
+      await deleteCalInvites(calendarId);
+      await deleteCalMarks(calendarId);
       const deletedCal = await deleteCal(calendarId);
       alert(`Deleted ${deletedCal.name}`);
       navigate('/');
