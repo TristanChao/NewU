@@ -70,13 +70,23 @@ export function ShareInvites() {
 
   return (
     <div className="px-[15px] small:px-[50px] big:px-[200px]">
-      <h1 className="text-[24px] mt-[20px]">Calendar Share Requests</h1>
-      <div className="flex items-center px-[20px] text-[20px] mt-[15px] mb-[10px]">
-        <h1 className="basis-2/5">Calendar Name</h1>
-        <h1 className="basis-2/5">Owner</h1>
-        <h1 className="basis-1/5 text-right">Actions</h1>
-      </div>
-      {inviteCompArr}
+      <h1 className="text-[24px] mt-[20px] mb-[15px]">
+        Calendar Share Requests
+      </h1>
+      {inviteCompArr.length > 0 ? (
+        <>
+          <div className="flex items-center px-[20px] text-[20px] mt-[15px] mb-[10px]">
+            <h1 className="basis-2/5">Calendar Name</h1>
+            <h1 className="basis-2/5">Owner</h1>
+            <h1 className="basis-1/5 text-right">Actions</h1>
+          </div>
+          {inviteCompArr}
+        </>
+      ) : (
+        <span className="text-[18px] text-gray-400">
+          No pending invitations
+        </span>
+      )}
     </div>
   );
 }
@@ -114,13 +124,13 @@ function Invitation({
         <button
           type="button"
           onClick={() => handleAccept(calendarId)}
-          className="w-[30px] h-[30px] flex justify-center items-center rounded-full border border-green-500 text-green-500 bg-green-200 mr-[5px]">
+          className="w-[35px] h-[35px] flex justify-center items-center rounded-full border border-green-500 text-green-500 bg-green-200 mr-[10px] text-[20px]">
           <FaCheck />
         </button>
         <button
           type="button"
           onClick={() => handleReject(calendarId)}
-          className="w-[30px] h-[30px] flex justify-center items-center rounded-full border border-red-500 text-red-500 bg-red-200">
+          className="w-[35px] h-[35px] flex justify-center items-center rounded-full border border-red-500 text-red-500 bg-red-200 text-[20px]">
           <FaXmark />
         </button>
       </div>

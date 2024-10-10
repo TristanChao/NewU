@@ -482,6 +482,19 @@ export async function readSharedWeekMarks(date: string): Promise<Mark[]> {
   return sharedMarks;
 }
 
+export async function deleteCalMarks(calendarId: string): Promise<Mark[]> {
+  const req = {
+    method: 'delete',
+    headers: {
+      Authorization: 'Bearer ' + readToken(),
+    },
+  };
+  const res = await fetch(`/api/marks/${calendarId}`, req);
+  if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
+  const deletedMarks = (await res.json()) as Mark[];
+  return deletedMarks;
+}
+
 // --------------------------------------------------------------------
 
 type CreateAccessParams = {
@@ -511,6 +524,36 @@ export async function createAccess({
   return newAccess;
 }
 
+export async function readAccess(calendarId: number): Promise<Access[]> {
+  const req = {
+    headers: {
+      Authorization: ('Bearer ' + readToken()) as string,
+    },
+  };
+  const res = await fetch(`/api/access/${calendarId}`, req);
+  if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
+  const accesses = (await res.json()) as Access[];
+  return accesses;
+}
+
+export async function deleteAccesses(calendarId: string): Promise<Access[]> {
+  const req = {
+    method: 'delete',
+    headers: {
+      Authorization: ('Bearer ' + readToken()) as string,
+    },
+  };
+  const res = await fetch(`/api/accesses/${calendarId}`, req);
+  if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
+  const deletedAccesses = (await res.json()) as Access[];
+  return deletedAccesses;
+}
+
+/**
+ * Retrieves various details of a specific user by username.
+ * @param username A string of a user's username.
+ * @returns An object of a user's details.
+ */
 export async function getUser(username: string): Promise<User> {
   const req = {
     headers: {
@@ -563,7 +606,7 @@ export async function readInvites(): Promise<CalendarShare[]> {
   return invites;
 }
 
-export async function deleteInvite(calendarId: number): Promise<Invite> {
+export async function deleteInvite(calendarId: number): Promise<Invite[]> {
   const req = {
     method: 'delete',
     headers: {
@@ -574,18 +617,19 @@ export async function deleteInvite(calendarId: number): Promise<Invite> {
   };
   const res = await fetch('/api/invite', req);
   if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
-  const deletedInvite = (await res.json()) as Invite;
-  return deletedInvite;
+  const deletedInvites = (await res.json()) as Invite[];
+  return deletedInvites;
 }
 
-export async function readAccess(calendarId: number): Promise<Access[]> {
+export async function deleteCalInvites(calendarId: string): Promise<Invite[]> {
   const req = {
+    method: 'delete',
     headers: {
       Authorization: ('Bearer ' + readToken()) as string,
     },
   };
-  const res = await fetch(`/api/access/${calendarId}`, req);
+  const res = await fetch(`/api/invites/${calendarId}`, req);
   if (!res.ok) throw new Error(`fetch Error: ${res.status}`);
-  const accesses = (await res.json()) as Access[];
-  return accesses;
+  const deletedInvites = (await res.json()) as Invite[];
+  return deletedInvites;
 }

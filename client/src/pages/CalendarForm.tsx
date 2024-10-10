@@ -5,7 +5,10 @@ import {
   convertColorBorder,
   createAccess,
   createCal,
+  deleteAccesses,
   deleteCal,
+  deleteCalInvites,
+  deleteCalMarks,
   readCalendar,
   updateCal,
 } from '../lib';
@@ -100,12 +103,11 @@ export function CalendarForm() {
   async function handleDelete() {
     try {
       if (!calendarId) throw new Error("shouldn't happen");
+      await deleteAccesses(calendarId);
+      await deleteCalInvites(calendarId);
+      await deleteCalMarks(calendarId);
       const deletedCal = await deleteCal(calendarId);
       alert(`Deleted ${deletedCal.name}`);
-      setName(undefined);
-      setGoal(0);
-      setDesc(undefined);
-      setColor('red');
       navigate('/');
     } catch (err) {
       console.error(err);
@@ -213,7 +215,7 @@ export function CalendarForm() {
           onChange={(e) => setDesc(e.target.value)}
           placeholder="What am I hoping to accomplish by starting/breaking this habit?"
           id="cal-desc-input"
-          className="p-[5px] border bg-gray-100 rounded h-[200px] text-[18px] mb-[20px]"
+          className="p-[5px] border bg-gray-100 rounded h-[150px] text-[18px] mb-[20px]"
         />
         {Number(calendarId) > 0 && (
           <div className="">

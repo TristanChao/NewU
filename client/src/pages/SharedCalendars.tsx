@@ -46,8 +46,12 @@ export function SharedCalendars() {
 
   return (
     <div className="px-[15px] small:px-[50px] big:px-[200px]">
-      <h1 className="text-[24px] mt-[20px]">Shared With Me</h1>
-      {calCompArr}
+      <h1 className="text-[24px] mt-[20px] mb-[15px]">Shared With Me</h1>
+      {calCompArr.length > 0 ? (
+        calCompArr
+      ) : (
+        <p>You don't have any calendars shared with you :&#40;</p>
+      )}
     </div>
   );
 }

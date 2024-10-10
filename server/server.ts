@@ -406,6 +406,23 @@ app.post('/api/shared/marks', authMiddleware, async (req, res, next) => {
   }
 });
 
+app.delete('/api/marks/:calendarId', authMiddleware, async (req, res, next) => {
+  try {
+    const { calendarId } = req.params;
+    const sql = `
+      delete
+      from "habitMarks"
+      where "calendarId" = $1
+        and "ownerId" = $2
+      returning *;
+    `;
+    const result = await db.query(sql, [+calendarId, req.user?.userId]);
+    res.json(result.rows);
+  } catch (err) {
+    next(err);
+  }
+});
+
 // ------------------------------------------------------------------------
 
 app.post('/api/access', authMiddleware, async (req, res, next) => {
@@ -444,6 +461,42 @@ app.post('/api/invite', authMiddleware, async (req, res, next) => {
   }
 });
 
+app.get('/api/access/:calendarId', authMiddleware, async (req, res, next) => {
+  try {
+    const { calendarId } = req.params;
+    const sql = `
+      select *
+      from "calendarAccess"
+      where "calendarId" = $1
+        and "userId" = $2;
+    `;
+    const params = [calendarId, req.user?.userId];
+    const result = await db.query(sql, params);
+    res.json(result.rows);
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.delete(
+  '/api/accesses/:calendarId',
+  authMiddleware,
+  async (req, res, next) => {
+    try {
+      const { calendarId } = req.params;
+      const sql = `
+      delete
+      from "calendarAccess"
+      where "calendarId" = $1;
+    `;
+      const result = await db.query(sql, [calendarId]);
+      res.json(result.rows);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
 app.get('/api/invites', authMiddleware, async (req, res, next) => {
   try {
     const sql = `
@@ -481,22 +534,25 @@ app.delete('/api/invite', authMiddleware, async (req, res, next) => {
   }
 });
 
-app.get('/api/access/:calendarId', authMiddleware, async (req, res, next) => {
-  try {
-    const { calendarId } = req.params;
-    const sql = `
-      select *
-      from "calendarAccess"
+app.delete(
+  '/api/invites/:calendarId',
+  authMiddleware,
+  async (req, res, next) => {
+    try {
+      const { calendarId } = req.params;
+      const sql = `
+      delete
+      from "shareInvites"
       where "calendarId" = $1
-        and "userId" = $2;
+      returning *;
     `;
-    const params = [calendarId, req.user?.userId];
-    const result = await db.query(sql, params);
-    res.json(result.rows);
-  } catch (err) {
-    next(err);
+      const result = await db.query(sql, [calendarId]);
+      res.json(result.rows);
+    } catch (err) {
+      next(err);
+    }
   }
-});
+);
 
 /*
  * Handles paths that aren't handled by any other route handler.
